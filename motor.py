@@ -4,12 +4,12 @@ from time import sleep
 mL = ev3.LargeMotor('outD')
 mR = ev3.LargeMotor('outA')
 
-#runSpeed = 300
+runSpeed = 300
 turnSpeed = 100
 turnDistanceWheel = 130
 
 
-def moveStraigth(direction, errorL, errorR, runSpeed=300):
+def moveStraigth(direction, errorL, errorR):
     if direction == 'backward':
         mL.run_forever(speed_sp=int(errorL*runSpeed))
         mR.run_forever(speed_sp=int(errorR*runSpeed))
@@ -20,20 +20,20 @@ def moveStraigth(direction, errorL, errorR, runSpeed=300):
 
 def moveReal(direction, distance):
     if direction == "backward":
-        mL.run_to_rel_pos(position_sp=distance, speed_sp=300, stop_action="hold")
-        mR.run_to_rel_pos(position_sp=distance, speed_sp=300, stop_action="hold")
+        mL.run_to_rel_pos(position_sp=distance, speed_sp=runSpeed, stop_action="hold")
+        mR.run_to_rel_pos(position_sp=distance, speed_sp=runSpeed, stop_action="hold")
         mL.wait_while('running')
     else:
-        mL.run_to_rel_pos(position_sp=-distance, speed_sp=300, stop_action="hold")
-        mR.run_to_rel_pos(position_sp=-distance, speed_sp=300, stop_action="hold")
+        mL.run_to_rel_pos(position_sp=-distance, speed_sp=runSpeed, stop_action="hold")
+        mR.run_to_rel_pos(position_sp=-distance, speed_sp=runSpeed, stop_action="hold")
         mL.wait_while('running')
     #while mL.state == 'running' or mR.state == 'running':
     #    sleep(0.1)
 
 
 def stopMovement():
-    mL.stop(stop_action='brake')
-    mR.stop(stop_action='brake')
+    mL.stop(stop_action='hold')
+    mR.stop(stop_action='hold')
     mL.run_forever(speed_sp=0)
     mR.run_forever(speed_sp=0)
 

@@ -52,45 +52,31 @@ def GoBackward():
 
     return done
 
-def Turn(direction):
-    done = turnRel(direction)
-    if done == True:
-        stopMovement()
-        return done
-    else:
-        return done
+#def Turn(direction):
+#    done = turnRel(direction)
+#    if done == True:
+#        stopMovement()
+#        return done
+#    else:
+#        return done
 
-#def Turn(direction, step):
-#    done = False
-#    sensorLeft = lightSensorLeft.value()
-#    sensorRight = lightSensorRight.value()
-#
-#    errorR = sensorRight/THRESHOLD
-#    errorL = sensorLeft/THRESHOLD
-#    error_thresh = 0.6
-#
-#    if direction == "right":
-#        if step == 1:
-#            turnRel(direction)
-#            step = 2
-#        elif step == 2:
-#            if errorL < error_thresh:
-#                stopMovement()
-#                done = True
-#            else:
-#                turn(direction)
-#    elif direction == "left":
-#        if step == 1:
-#            turnRel(direction)
-#            step = 2
-#        elif step == 2:
-#            if errorR < error_thresh:
-#                stopMovement()
-#                done = True
-#            else:
-#                turn(direction)
-#
-#    return (done, step)
+def Turn(direction):
+    done = False
+    sensorLeft = lightSensorLeft.value()
+    sensorRight = lightSensorRight.value()
+
+    if direction == "right":
+        turn(direction)
+        if sensorRight < 7:
+            stopMovement()
+            done = True
+    elif direction == "left":
+        turn(direction)
+        if sensorLeft < 7:
+            stopMovement()
+            done = True
+
+    return done
 
 def deliverCan():
     done = False
@@ -135,7 +121,6 @@ listOfMovements = ["driveForward", "turnLeft", "driveForward", "turnLeft", "driv
 #listOfMovements = ["driveForward", "driveForward", "turnLeft", "driveForward", "driveForward", "turnLeft", "driveForward", "driveForward", "turnLeft", "driveForward", "driveForward", "turnLeft"]
 #listOfMovements = ["turnRight", "deliverCan", "turnLeft", "driveForward"]
 index = -1
-turn_step = 1
 
 
 logfile = open("logfile.txt", "w")
@@ -159,9 +144,6 @@ while len(listOfMovements) >= index:
         logfile = open("logfile.txt", "a")
         logfile.write("index: " + str(index) + " movement: " + listOfMovements[index] + " TAKEN!!" + "\n")
         logfile.close()
-        #logfile = open("logfile.txt", "a")
-        #logfile.write("NEXT STATE \n")
-        #logfile.close()
     elif state == "driveForward":
         done = GoForward()
         if done:
