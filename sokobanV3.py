@@ -11,7 +11,12 @@ lightSensorFront = ev3.LightSensor('in4')
 ## 62-69    White
 ## 4-7      Black
 
-initSteps = 20
+
+
+##======================================================================
+# GLOBAL VARIABLES
+
+INIT_STEPS = 20
 
 ##======================================================================
 
@@ -20,7 +25,7 @@ def initializeSensors():
     frontValue = 0
     value = 0
 
-    for i in range(initSteps):
+    for i in range(INIT_STEPS):
         sensorLeft = lightSensorLeft.value()
         sensorRight = lightSensorRight.value()
         sensorFront = lightSensorFront.value()
@@ -29,9 +34,10 @@ def initializeSensors():
         frontValue = frontValue + sensorFront
 
 
-    value = (value/(initSteps*2))
-    frontValue = (frontValue/initSteps)*0.9
+    value = (value / (INIT_STEPS * 2))
+    frontValue = (frontValue / INIT_STEPS) * 0.9
     return (value, frontValue)
+
 
 
 
@@ -45,12 +51,11 @@ def GoForward():
     errorL = sensorLeft/THRESHOLD
 
     if sensorFront < STOP_THRESHOLD:
-        moveReal('forward', 100)
+        moveReal('forward', 250)
         stopMovement()
         done = True
     else:
-        #moveStraigth('forward', errorL, errorR)
-        moveStraigth('forward', sensorLeft, sensorRight, THRESHOLD)
+        moveStraigth('forward', errorL, errorR)
 
     return done
 
@@ -79,10 +84,6 @@ def CenterLine():
     done = False
     sensorLeft = lightSensorLeft.value()
     sensorRight = lightSensorRight.value()
-
-    logfile = open("logfile.txt", "a")
-    logfile.write("sensorvalues: L: " + str(sensorLeft) + " R: " + str(sensorRight) + "\n")
-    logfile.close()
 
     if abs(sensorLeft - sensorRight) < 5:
         stopMovement()
@@ -144,24 +145,19 @@ def Error():
 ##======================================================================
 
 
-runForever = True
+runForever = False
 
 THRESHOLD, STOP_THRESHOLD = initializeSensors()
 
-
 #listOfMovements = ["driveForward"]
+listOfMovements = ["driveForward", "turnLeft", "wait", "turnLeft", "driveForward"]
 #listOfMovements = ["turnLeft", "wait", "turnLeft", "wait", "turnLeft", "wait", "turnLeft", "wait"]
-listOfMovements = ["driveForward", "driveForward", "driveForward", "driveForward", "turnLeft", "turnLeft", "driveForward", "driveForward", "driveForward", "driveForward", "turnRight", "turnRight"]
-#listOfMovements = ["driveForward", "turnLeft", "driveForward", "turnLeft", "driveForward", "turnLeft", "driveForward", "turnLeft", "stop"]
-#listOfMovements = ["driveForward", "driveForward", "driveForward", "stop"]
-#listOfMovements = ["turnLeft", "wait", "turnRight", "wait", "turnLeft", "wait", "turnRight"]
-#listOfMovements = ["driveForward", "turnRight", "driveForward", "turnLeft", "driveForward", "stop"]
-#listOfMovements = ["driveForward", "driveForward", "turnLeft", "driveForward", "driveForward", "turnLeft", "driveForward", "driveForward", "turnLeft", "driveForward", "driveForward", "turnLeft"]
-#listOfMovements = ["turnRight", "deliverCan", "turnLeft", "driveForward"]
+#listOfMovements = ["driveForward", "driveForward", "driveForward", "driveForward", "turnLeft", "turnLeft", "driveForward", "driveForward", "driveForward", "driveForward", "turnRight", "turnRight"]
 
 state = "idle"
 index = -1
 turnState = "initial"
+counter = 0
 
 
 logfile = open("logfile.txt", "w")
@@ -173,17 +169,21 @@ logfile.close()
 while len(listOfMovements) >= index:
 
     if index >= 0:
-        logfile = open("logfile.txt", "a")
-        logfile.write("index: " + str(index) + " movement: " + listOfMovements[index] + "\n")
-        logfile.close()
+        pass
+        #logfile = open("logfile.txt", "a")
+        #logfile.write("index: " + str(index) + " movement: " + listOfMovements[index] + "\n")
+        #logfile.close()
 
 
     if state == "idle":
+
+        logfile = open("logfile.txt", "a")
+        logfile.write("Number of iterations used: " + str(counter) + " for, index: " + str(index) + " movement: " + listOfMovements[index] + "\n")
+
         index = index + 1
         if len(listOfMovements) > index:
             state = listOfMovements[index]
 
-        logfile = open("logfile.txt", "a")
         logfile.write("Length: " + str(len(listOfMovements)) + "   index: " + str(index) + " movement: " + listOfMovements[index] + " TAKEN!!" + "\n")
         logfile.close()
     elif state == "driveForward":
@@ -236,3 +236,5 @@ while len(listOfMovements) >= index:
             logfile = open("logfile.txt", "a")
             logfile.write("Repeat sequence #############################################################" + "\n")
             logfile.close()
+
+    counter += 1
