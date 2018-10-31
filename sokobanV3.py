@@ -7,6 +7,7 @@ from time import sleep
 lightSensorLeft = ev3.ColorSensor('in2')
 lightSensorRight = ev3.ColorSensor('in1')
 lightSensorFront = ev3.LightSensor('in4')
+touchSensor = ev3.TouchSensor('in3')
 
 ## 62-69    White
 ## 4-7      Black
@@ -37,8 +38,6 @@ def initializeSensors():
     value = (value / (INIT_STEPS * 2))
     frontValue = (frontValue / INIT_STEPS) * 0.9
     return (value, frontValue)
-
-
 
 
 def GoForward():
@@ -102,12 +101,12 @@ def Turn(direction):
 
     if direction == "right":
         turn(direction)
-        if sensorLeft - sensorRight > THRESHOLD*0.8:
+        if sensorLeft - sensorRight > THRESHOLD*0.75:
             stopMovement()
             done = True
     elif direction == "left":
         turn(direction)
-        if sensorRight - sensorLeft > THRESHOLD*0.8:
+        if sensorRight - sensorLeft > THRESHOLD*0.75:
             stopMovement()
             done = True
 
@@ -145,14 +144,16 @@ def Error():
 ##======================================================================
 
 
-runForever = False
+runForever = True
 
 THRESHOLD, STOP_THRESHOLD = initializeSensors()
 
 #listOfMovements = ["driveForward"]
-listOfMovements = ["driveForward", "turnLeft", "wait", "turnLeft", "driveForward"]
+#listOfMovements = ["driveForward", "turnLeft", "wait", "turnLeft", "driveForward"]
 #listOfMovements = ["turnLeft", "wait", "turnLeft", "wait", "turnLeft", "wait", "turnLeft", "wait"]
 #listOfMovements = ["driveForward", "driveForward", "driveForward", "driveForward", "turnLeft", "turnLeft", "driveForward", "driveForward", "driveForward", "driveForward", "turnRight", "turnRight"]
+#listOfMovements = ["driveForward", "turnLeft", "driveForward", "turnRight", "driveForward", "turnRight", "driveForward", "turnRight", "driveForward", "turnRight","driveForward", "turnLeft", "driveForward", "turnLeft", "driveForward", "turnLeft"]
+listOfMovements = ["driveForward", "driveForward", "driveForward", "driveForward", "turnLeft"]
 
 state = "idle"
 index = -1
@@ -166,7 +167,7 @@ logfile.write("Number of Moves: " + str(len(listOfMovements)) + "\n")
 logfile.write("Threshold: " + str(THRESHOLD) + " Stop Threshold: " + str(STOP_THRESHOLD) + "\n")
 logfile.close()
 
-while len(listOfMovements) >= index:
+while len(listOfMovements) >= index and not touchSensor.value():
 
     if index >= 0:
         pass
@@ -177,15 +178,15 @@ while len(listOfMovements) >= index:
 
     if state == "idle":
 
-        logfile = open("logfile.txt", "a")
-        logfile.write("Number of iterations used: " + str(counter) + " for, index: " + str(index) + " movement: " + listOfMovements[index] + "\n")
+        #logfile = open("logfile.txt", "a")
+        #logfile.write("Number of iterations used: " + str(counter) + " for, index: " + str(index) + " movement: " + listOfMovements[index] + "\n")
 
         index = index + 1
         if len(listOfMovements) > index:
             state = listOfMovements[index]
 
-        logfile.write("Length: " + str(len(listOfMovements)) + "   index: " + str(index) + " movement: " + listOfMovements[index] + " TAKEN!!" + "\n")
-        logfile.close()
+        #logfile.write("Length: " + str(len(listOfMovements)) + "   index: " + str(index) + " movement: " + listOfMovements[index] + " TAKEN!!" + "\n")
+        #logfile.close()
     elif state == "driveForward":
         done = GoForward()
         if done:
@@ -233,8 +234,5 @@ while len(listOfMovements) >= index:
     if runForever == True:
         if index == len(listOfMovements)-1:
             index = -1
-            logfile = open("logfile.txt", "a")
-            logfile.write("Repeat sequence #############################################################" + "\n")
-            logfile.close()
 
     counter += 1

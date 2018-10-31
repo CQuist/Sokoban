@@ -4,7 +4,7 @@ from time import sleep
 mL = ev3.LargeMotor('outD')
 mR = ev3.LargeMotor('outA')
 
-runSpeed = 600
+runSpeed =600
 turnSpeed = 400
 turnDistanceWheel = 360
 
@@ -21,7 +21,7 @@ def PID(errorL, errorR):
 
     Kp = 1
     Ki = 0
-    Kd = 0
+    Kd = 0.5
 
     ### LEFT MOTOR
 
