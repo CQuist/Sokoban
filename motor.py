@@ -19,15 +19,19 @@ integratorMinMax = [0, 10]
 
 def PID(errorL, errorR):
 
-    Kp = 1
+    #change it to take the raw value and not the normalized
+
+    Kp = 4
     Ki = 0
     Kd = 0.5
 
     ### LEFT MOTOR
 
     pL = Kp * errorL
-    dL = Kd * abs(errorL - prev_error[0])
+    dL = Kd * (1-abs(errorL - prev_error[0]))
     prev_error[0] = errorL
+
+    integrator[0] = integrator[0] + errorL
 
     # clamp
     if integrator[0] < integratorMinMax[0]:
@@ -38,13 +42,15 @@ def PID(errorL, errorR):
     iL = Ki * integrator[0]
 
     gainL = pL+dL+iL
-    normGainL = gainL / (Kp+integratorMinMax[1]*Ki+Kd)
+    normGainL = gainL / (Kp + integratorMinMax[1] * Ki + Kd)
 
     ### Right MOTOR
 
     pR = Kp * errorR
-    dR = Kd * abs(errorR - prev_error[1])
+    dR = Kd * (1 - abs(errorR - prev_error[1]))
     prev_error[1] = errorR
+
+    integrator[1] = integrator[1] + errorR
 
     # clamp
     if integrator[1] < integratorMinMax[0]:
@@ -98,12 +104,12 @@ def moveReal(direction, distance):
         mL.run_to_rel_pos(position_sp=-distance, speed_sp=runSpeed, stop_action="hold")
         mR.run_to_rel_pos(position_sp=-distance, speed_sp=runSpeed, stop_action="hold")
         mL.wait_while('running')
+        mR.wait_while('running')
     else:
         mL.run_to_rel_pos(position_sp=distance, speed_sp=runSpeed, stop_action="hold")
         mR.run_to_rel_pos(position_sp=distance, speed_sp=runSpeed, stop_action="hold")
         mL.wait_while('running')
-    #while mL.state == 'running' or mR.state == 'running':
-    #    sleep(0.1)
+        mR.wait_while('running')
 
 
 def stopMovement():
@@ -125,13 +131,13 @@ def turnRel(direction, turnDistance):
         mL.wait_while('running')
         mR.wait_while('running')
 
-def turn(direction):
+def turn(direction, speed=turnSpeed):
     if direction == "right":
-        mL.run_forever(speed_sp=turnSpeed)
-        mR.run_forever(speed_sp=-turnSpeed)
+        mL.run_forever(speed_sp=speed)
+        mR.run_forever(speed_sp=-speed)
     elif direction == "left":
-        mL.run_forever(speed_sp=-turnSpeed)
-        mR.run_forever(speed_sp=turnSpeed)
+        mL.run_forever(speed_sp=-speed)
+        mR.run_forever(speed_sp=speed)
 
 
 def adjustLeft(direction, error):

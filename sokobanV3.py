@@ -9,6 +9,8 @@ lightSensorRight = ev3.ColorSensor('in1')
 lightSensorFront = ev3.LightSensor('in4')
 touchSensor = ev3.TouchSensor('in3')
 
+
+
 ## 62-69    White
 ## 4-7      Black
 
@@ -24,20 +26,23 @@ INIT_STEPS = 20
 def initializeSensors():
 
     frontValue = 0
-    value = 0
+    valueL = 0
+    valueR = 0
 
     for i in range(INIT_STEPS):
         sensorLeft = lightSensorLeft.value()
         sensorRight = lightSensorRight.value()
         sensorFront = lightSensorFront.value()
 
-        value = value + sensorLeft + sensorRight
+        valueL = valueL + sensorLeft
+        valueR = valueR +  + sensorRight
         frontValue = frontValue + sensorFront
 
 
-    value = (value / (INIT_STEPS * 2))
+    valueL = (valueL / INIT_STEPS)
+    valueR = (valueR / INIT_STEPS)
     frontValue = (frontValue / INIT_STEPS) * 0.9
-    return (value, frontValue)
+    return (valueL, valueR, frontValue)
 
 
 def GoForward():
@@ -46,8 +51,8 @@ def GoForward():
     sensorRight = lightSensorRight.value()
     sensorFront = lightSensorFront.value()
 
-    errorR = sensorRight/THRESHOLD
-    errorL = sensorLeft/THRESHOLD
+    errorR = sensorRight/THRESHOLD_R
+    errorL = sensorLeft/THRESHOLD_L
 
     if sensorFront < STOP_THRESHOLD:
         moveReal('forward', 250)
@@ -64,8 +69,8 @@ def GoBackward():
     sensorLeft = lightSensorLeft.value()
     sensorRight = lightSensorRight.value()
 
-    errorR = sensorRight//THRESHOLD
-    errorL = sensorLeft//THRESHOLD
+    errorR = sensorRight//THRESHOLD_R
+    errorL = sensorLeft//THRESHOLD_L
 
     if sensorLeft < STOP_THRESHOLD and sensorRight < STOP_THRESHOLD:
         moveReal('forward', 115)
@@ -84,13 +89,13 @@ def CenterLine():
     sensorLeft = lightSensorLeft.value()
     sensorRight = lightSensorRight.value()
 
-    if abs(sensorLeft - sensorRight) < 5:
+    if abs(sensorRight - sensorLeft) < 10:
         stopMovement()
         done = True
     elif sensorLeft > sensorRight:
-        turn("right")
+        turn("right", 200)
     elif sensorRight > sensorLeft:
-        turn("left")
+        turn("left", 200)
 
     return done
 
@@ -101,12 +106,12 @@ def Turn(direction):
 
     if direction == "right":
         turn(direction)
-        if sensorLeft - sensorRight > THRESHOLD*0.75:
+        if sensorLeft - sensorRight > THRESHOLD_L*0.75:
             stopMovement()
             done = True
     elif direction == "left":
         turn(direction)
-        if sensorRight - sensorLeft > THRESHOLD*0.75:
+        if sensorRight - sensorLeft > THRESHOLD_R*0.75:
             stopMovement()
             done = True
 
@@ -118,11 +123,11 @@ def deliverCan():
     sensorRight = lightSensorRight.value()
     sensorFront = lightSensorFront.value()
 
-    errorR = sensorRight/THRESHOLD
-    errorL = sensorLeft/THRESHOLD
+    errorR = sensorRight/THRESHOLD_R
+    errorL = sensorLeft/THRESHOLD_L
 
     if sensorFront < STOP_THRESHOLD:
-        moveReal('backward', 360)
+        moveReal('backward', 330)
         stopMovement()
         done = True
     else:
@@ -144,16 +149,38 @@ def Error():
 ##======================================================================
 
 
-runForever = True
+runForever = False
 
-THRESHOLD, STOP_THRESHOLD = initializeSensors()
+THRESHOLD_L, THRESHOLD_R, STOP_THRESHOLD = initializeSensors()
 
-#listOfMovements = ["driveForward"]
+ev3.Sound.beep().wait()
+
+while not touchSensor.value():
+    pass
+
+sleep(3)
+
+listofmoves = "frfdrflflffffdrflffflfflfflfdrflflfffdrflflffd"
+listOfMovements = []
+
+for n in listofmoves:
+    if n == "f":
+        listOfMovements.append("driveForward")
+    elif n == "r":
+        listOfMovements.append("turnRight")
+    elif n == "l":
+        listOfMovements.append("turnLeft")
+    elif n == "d":
+        listOfMovements.append("deliverCan")
+
+
+#listOfMovements = ["turnLeft", "wait" ,"turnLeft", "wait", "driveForward", "wait", "turnRight", "wait", "turnRight", "wait"]
+#listOfMovements = ["driveForward", "deliverCan", "turnRight", "driveForward", "turnLeft", "driveForward", "turnLeft"]
 #listOfMovements = ["driveForward", "turnLeft", "wait", "turnLeft", "driveForward"]
 #listOfMovements = ["turnLeft", "wait", "turnLeft", "wait", "turnLeft", "wait", "turnLeft", "wait"]
 #listOfMovements = ["driveForward", "driveForward", "driveForward", "driveForward", "turnLeft", "turnLeft", "driveForward", "driveForward", "driveForward", "driveForward", "turnRight", "turnRight"]
 #listOfMovements = ["driveForward", "turnLeft", "driveForward", "turnRight", "driveForward", "turnRight", "driveForward", "turnRight", "driveForward", "turnRight","driveForward", "turnLeft", "driveForward", "turnLeft", "driveForward", "turnLeft"]
-listOfMovements = ["driveForward", "driveForward", "driveForward", "driveForward", "turnLeft"]
+#listOfMovements = ["driveForward", "driveForward", "driveForward", "driveForward", "turnRight"]
 
 state = "idle"
 index = -1
@@ -164,7 +191,7 @@ counter = 0
 logfile = open("logfile.txt", "w")
 logfile.write("SOKOBAN LOG FILE \n")
 logfile.write("Number of Moves: " + str(len(listOfMovements)) + "\n")
-logfile.write("Threshold: " + str(THRESHOLD) + " Stop Threshold: " + str(STOP_THRESHOLD) + "\n")
+logfile.write("Threshold L: " + str(THRESHOLD_L) + "Threshold R: " + str(THRESHOLD_R) + " Stop Threshold: " + str(STOP_THRESHOLD) + "\n")
 logfile.close()
 
 while len(listOfMovements) >= index and not touchSensor.value():
@@ -222,7 +249,7 @@ while len(listOfMovements) >= index and not touchSensor.value():
     elif state == "deliverCan":
         done = deliverCan()
         if done:
-            state = "driveBackwards"
+            state = "idle"
     elif state == "wait":
         sleep(3)
         state = "idle"
