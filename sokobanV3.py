@@ -142,6 +142,8 @@ def StopMovement():
 
 def Error():
     print("Input not valid")
+    ev3.Sound.beep().wait()
+    ev3.Sound.beep().wait()
     sleep(10)
 
 ##======================================================================
@@ -158,7 +160,7 @@ ev3.Sound.beep().wait()
 while not touchSensor.value():
     pass
 
-sleep(3)
+sleep(1)
 
 listofmoves = "frfdrflflffffdrflffflfflfflfdrflflfffdrflflffd"
 listOfMovements = []
@@ -172,15 +174,12 @@ for n in listofmoves:
         listOfMovements.append("turnLeft")
     elif n == "d":
         listOfMovements.append("deliverCan")
-
-
-#listOfMovements = ["turnLeft", "wait" ,"turnLeft", "wait", "driveForward", "wait", "turnRight", "wait", "turnRight", "wait"]
-#listOfMovements = ["driveForward", "deliverCan", "turnRight", "driveForward", "turnLeft", "driveForward", "turnLeft"]
-#listOfMovements = ["driveForward", "turnLeft", "wait", "turnLeft", "driveForward"]
-#listOfMovements = ["turnLeft", "wait", "turnLeft", "wait", "turnLeft", "wait", "turnLeft", "wait"]
-#listOfMovements = ["driveForward", "driveForward", "driveForward", "driveForward", "turnLeft", "turnLeft", "driveForward", "driveForward", "driveForward", "driveForward", "turnRight", "turnRight"]
-#listOfMovements = ["driveForward", "turnLeft", "driveForward", "turnRight", "driveForward", "turnRight", "driveForward", "turnRight", "driveForward", "turnRight","driveForward", "turnLeft", "driveForward", "turnLeft", "driveForward", "turnLeft"]
-#listOfMovements = ["driveForward", "driveForward", "driveForward", "driveForward", "turnRight"]
+    elif n == "w":
+        listOfMovements.append("wait")
+    elif n == "s":
+        listOfMovements.append("stop")
+    else:
+        listOfMovements.append("error")
 
 state = "idle"
 index = -1
