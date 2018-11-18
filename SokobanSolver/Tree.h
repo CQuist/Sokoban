@@ -11,16 +11,6 @@
 
 using namespace std;
 
-struct NodeHasher
-{
-    size_t
-    operator()(const Node & node) const
-    {
-        return std::hash<std::string>()(node.path);
-    }
-};
-
-
 class Tree
 {
 public:

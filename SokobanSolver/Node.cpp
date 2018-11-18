@@ -195,7 +195,7 @@ int Node::h_func()
 
     Hungarian::Result minimumCost = Solve(costMatrix, Hungarian::MODE_MINIMIZE_COST);
 
-    return minimumCost.totalCost;// + playerToCanManhattenValue;
+    return minimumCost.totalCost + playerToCanManhattenValue;
 }
 
 int Node::g_func()
