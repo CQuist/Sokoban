@@ -10,6 +10,6 @@ add_library(hungarian hungarianMethod/hungarian.cpp hungarianMethod/hungarian.hp
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(SokobanSolver main.cpp Tree.cpp Tree.h)
+add_executable(SokobanSolver main.cpp Tree.cpp Tree.h Point.cpp Point.h Node.cpp Node.h)
 
 target_link_libraries(SokobanSolver hungarian)

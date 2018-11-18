@@ -28,23 +28,40 @@ Tree::Tree(vector<vector<int>> &map)
         }
     }
 
-    this->height = map.size();
-    this->width = map[1].size();
-
-
-    int treeSize = 4*map[0].size()*map.size();
-    for (int k = 1; k < initialState.canPositions.size(); ++k)
-    {
-        treeSize *= ((map[0].size()*map.size())-(k-1));
-    }
-
-    cout << treeSize << endl;
+    this->height = (int)map.size();
+    this->width = (int)map[1].size();
 
     bubbleSort(initialState.goalPositions);
 
     this->initialState = initialState;
 
 }
+
+string Tree::aStar()
+{
+    string moves;
+
+    int i = 0;
+    openSet.push(initialState);
+
+    while (!openSet.empty())
+    {
+        Node node = openSet.top();
+        openSet.pop();
+        if (isGoal(node))
+            return node.path;
+        else
+        {
+            filterAndMerge(node);
+            cout << "Index: " << i << " h: " <<  node.h << " g: " << node.g << " Robot pos: " << node.robotPosition.x << "," << node.robotPosition.y << " number of complted cans: " << node.goalsWithCans.size() << endl;
+        }
+        i++;
+    }
+
+    cout << "FAILED! NO PATH FOUND" << endl;
+    return moves;
+}
+
 
 bool Tree::isGoal(Node &node)
 {
@@ -135,48 +152,22 @@ vector<Point> Tree::getNeighbours(Point point)
     return neighbours;
 }
 
-string Tree::aStar()
-{
-    string moves;
-
-    int i = 0;
-    openSet.push(initialState);
-
-    while (!openSet.empty())
-    {
-        Node node = openSet.top();
-        openSet.pop();
-        if (isGoal(node))
-            return node.path;
-        else
-        {
-            filterAndMerge(node);
-            cout << "Index: " << i << " h: " <<  node.h << " g: " << node.g << " Robot pos: " << node.robotPosition.x << "," << node.robotPosition.y << " number of complted cans: " << node.goalsWithCans.size() << endl;
-        }
-        i++;
-    }
-
-    cout << "FAILED! NO PATH FOUND" << endl;
-    return moves;
-}
-
 bool Tree::stateVisited(Node &node)
 {
-    for (int i = 0; i < closedSet.size(); ++i)
+    /*for (int i = 0; i < closedSet.size(); ++i)
     {
         if (closedSet[i] == node)
             return true;
     }
     return false;
+    */
 
-
-
-    //return closedSet.find(node) == closedSet.end();
+    return !(closedSet.find(node) == closedSet.end());
 }
 
 void Tree::filterAndMerge(Node &node)
 {
-    closedSet.push_back(node);
+    closedSet.insert(node);
     node.makeSuccessors();
 
     if (node.goUp != nullptr && isLegalMove(*node.goUp) && !isDeadLock(*node.goUp) && !stateVisited(*node.goUp))
