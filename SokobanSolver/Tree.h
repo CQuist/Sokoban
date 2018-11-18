@@ -38,14 +38,7 @@ public:
     char backWards(char &step);
 
     bool deadLockedPoint(Point point, Node &node);
-
-
-    static const int CUTOFF = 3;
-    static void bubbleSort(deque<Node> &array, int left, int right);
-    static void quickSort(deque<Node> &array);
-    static void quickSort(deque<Node> &array, int left, int right);
-    static int median(deque<Node> &array, int left, int right);
-    inline static void swap(deque<Node> &array, int i, int j);
+    bool outOfBounds(Point point);
 
     static void bubbleSort(vector<Point> &array);
     static void bubbleSort(vector<Point> &array, int left, int right);

@@ -8,15 +8,8 @@ int main()
     //https://www.geeksforgeeks.org/unorderd_set-in-cpp-stl/
 
     /* PROBLEMS
-        måske kan der ikke findes løsning fordi den fastsætter en can på goal
-        den går rundt på hullerne
-        use heap instead of list and sort
-        skubbe can ind i can
 
-
-        lav deadlock tjek
-        hash table isteadet for search closed set
-        heap istedet for sorting algorithm
+        FIX DEADLOCK FUNCTION!
         a* om til ida*
 
     */
@@ -26,7 +19,7 @@ int main()
     // 2 = CAN
     // 3 = GOAL
     // 4 = INACCESSIBLE
-
+/*
     vector<vector<int>> map = {{0,0,0,3,0},
                               {0,0,0,0,0},
                               {3,0,3,0,3},
@@ -37,14 +30,14 @@ int main()
                               {0,2,2,0,0},
                               {0,2,1,0,0},
                               {0,0,0,4,4}};
+*/
 
-
-/*    vector<vector<int>> map = {{0,2,3,3},
+    vector<vector<int>> map = {{0,2,3,3},
                                {0,0,0,0},
                                {2,3,2,0},
                                {0,2,0,0},
                                {3,1,0,0}};
-*/
+
 /*    vector<vector<int>> map = {{0,3,0,3},
                                {0,2,4,4},
                                {0,0,4,4},
@@ -62,6 +55,13 @@ int main()
                                {0,1,0,2,0},
                                {0,4,4,0,3},
                                {0,2,0,3,0}};
+*/
+    // DEADLOCK EXAMPLE
+/*    vector<vector<int>> map = {{0,3,0,3},
+                               {0,2,4,4},
+                               {0,0,4,4},
+                               {0,0,4,4},
+                               {2,1,4,4}};
 */
     Tree testTree(map);
 

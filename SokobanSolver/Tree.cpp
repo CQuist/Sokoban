@@ -87,12 +87,12 @@ bool Tree::isGoal(Node &node)
 
 bool Tree::isDeadLock(Node &node)
 {
-/*    for (int i = 0; i < node.canPositions.size(); ++i)
+    for (int i = 0; i < node.canPositions.size(); ++i)
     {
         if (deadLockedPoint(node.canPositions[i], node))
             return true;
     }
-*/
+
     return false;
 }
 
@@ -102,6 +102,14 @@ bool Tree::deadLockedPoint(Point point, Node &node)
     for (int j = 0; j < neighbours.size(); ++j)
     {
         vector<int> obstacles;
+
+        if (outOfBounds(neighbours[j]))
+        {
+            obstacles.push_back(j);
+            obstacles.push_back(0);
+        }
+
+
         for (int k = 0; k < initialState.holePositions.size(); ++k)
         {
             if (neighbours[j] == initialState.holePositions[k])
@@ -152,16 +160,13 @@ vector<Point> Tree::getNeighbours(Point point)
     return neighbours;
 }
 
+bool Tree::outOfBounds(Point point)
+{
+    return (point.x >= width || point.x < 0 || point.y < 0 || point.y >= height);
+};
+
 bool Tree::stateVisited(Node &node)
 {
-    /*for (int i = 0; i < closedSet.size(); ++i)
-    {
-        if (closedSet[i] == node)
-            return true;
-    }
-    return false;
-    */
-
     return !(closedSet.find(node) == closedSet.end());
 }
 
@@ -178,120 +183,11 @@ void Tree::filterAndMerge(Node &node)
         openSet.push(*node.goLeft);
     if (node.goRight != nullptr && isLegalMove(*node.goRight) && !isDeadLock(*node.goRight) && !stateVisited(*node.goRight))
         openSet.push(*node.goRight);
-
-    //quickSort(openSet);
-
 };
-
-void Tree::bubbleSort(deque<Node> &array, int left, int right)
-{
-    bool swapped = false;
-    for (int i = left; i <= right; ++i)
-    {
-        for (int j = left; j <= right - i - 1 + left; ++j)
-        {
-            if (array[j].getCost() > array[j + 1].getCost())
-            {
-                swap(array, j, j + 1);
-                swapped = true;
-            }
-        }
-        if(!swapped)
-            return;
-    }
-}
-
-void Tree::quickSort(deque<Node> &array)
-{
-    bubbleSort(array, 0, array.size()-1);
-}
-
-void Tree::quickSort(deque<Node> &array, int left, int right)
-{
-    if(left + CUTOFF <= right)
-    {
-        int pivot = median(array, left, right);
-        int i = left;
-        int j = right - 1;
-
-        while (true)
-        {
-            while ( array[++i].getCost() < pivot );
-            while ( array[--j].getCost() > pivot );
-            if (i < j)
-                swap(array, i, j);
-            else
-                break;
-        }
-        swap(array, i, right -1);
-
-        quickSort(array, left, i - 1);
-        quickSort(array, i + 1, right);
-    }
-    else
-        bubbleSort(array, left, right);
-}
-
-int Tree::median(deque<Node> &array, int left, int right)
-{
-    // Return median of left, center and right
-    // Order these and hide the pivot
-    int center = (left + right) / 2;
-
-    if (array[center].getCost() < array[left].getCost())
-        swap(array, left, center);
-
-    if (array[right].getCost() < array[left].getCost())
-        swap(array, left, right);
-
-    if (array[right].getCost() < array[center].getCost())
-        swap(array, center, right);
-
-    // Place pivot at position right -1
-    swap(array, center , right -1);
-    return array[right - 1].getCost();
-}
-
-inline void Tree::swap(deque<Node> &array, int i, int j)
-{
-    Node indexI = array[i];
-    array[i] = array[j];
-    array[j] = indexI;
-}
-
-void Tree::bubbleSort(vector<Point> &array)
-{
-    bubbleSort(array, 0, array.size()-1);
-}
-
-void Tree::bubbleSort(vector<Point> &array, int left, int right)
-{
-    bool swapped = false;
-    for (int i = left; i <= right; ++i)
-    {
-        for (int j = left; j <= right - i - 1 + left; ++j)
-        {
-            if (array[j] > array[j + 1])
-            {
-                swap(array, j, j + 1);
-                swapped = true;
-            }
-        }
-        if(!swapped)
-            return;
-    }
-}
-
-inline void Tree::swap(vector<Point> &array, int i, int j)
-{
-    Point indexI = array[i];
-    array[i] = array[j];
-    array[j] = indexI;
-}
 
 bool Tree::isLegalMove(Node &node)
 {
-    if (node.robotPosition.x >= width || node.robotPosition.x < 0 || node.robotPosition.y < 0 || node.robotPosition.y >= height)
+    if (outOfBounds(node.robotPosition))
         return false;
 
     for (int i = 0; i < node.holePositions.size(); ++i)
@@ -325,4 +221,34 @@ char Tree::backWards(char &step)
         return 'l';
     if (step == 'l')
         return 'r';
+}
+
+void Tree::bubbleSort(vector<Point> &array)
+{
+    bubbleSort(array, 0, array.size()-1);
+}
+
+void Tree::bubbleSort(vector<Point> &array, int left, int right)
+{
+    bool swapped = false;
+    for (int i = left; i <= right; ++i)
+    {
+        for (int j = left; j <= right - i - 1 + left; ++j)
+        {
+            if (array[j] > array[j + 1])
+            {
+                swap(array, j, j + 1);
+                swapped = true;
+            }
+        }
+        if(!swapped)
+            return;
+    }
+}
+
+inline void Tree::swap(vector<Point> &array, int i, int j)
+{
+    Point indexI = array[i];
+    array[i] = array[j];
+    array[j] = indexI;
 }
