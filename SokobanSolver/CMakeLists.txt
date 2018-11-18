@@ -6,6 +6,10 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
+add_library(hungarian hungarianMethod/hungarian.cpp hungarianMethod/hungarian.hpp)
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(SokobanSolver main.cpp Tree.cpp Tree.h)
+
+target_link_libraries(SokobanSolver hungarian)

@@ -70,7 +70,69 @@ bool Tree::isGoal(Node &node)
 
 bool Tree::isDeadLock(Node &node)
 {
+/*    for (int i = 0; i < node.canPositions.size(); ++i)
+    {
+        if (deadLockedPoint(node.canPositions[i], node))
+            return true;
+    }
+*/
     return false;
+}
+
+bool Tree::deadLockedPoint(Point point, Node &node)
+{
+    vector<Point> neighbours = getNeighbours(point);
+    for (int j = 0; j < neighbours.size(); ++j)
+    {
+        vector<int> obstacles;
+        for (int k = 0; k < initialState.holePositions.size(); ++k)
+        {
+            if (neighbours[j] == initialState.holePositions[k])
+            {
+                obstacles.push_back(j);
+                obstacles.push_back(0);
+            }
+        }
+        for (int l = 0; l < node.canPositions.size(); ++l)
+        {
+            if (neighbours[j] == node.canPositions[l])
+            {
+                obstacles.push_back(j);
+                obstacles.push_back(1);
+            }
+        }
+
+        for (int m = 2; m < obstacles.size(); m = m+2)
+        {
+            if ((obstacles[m-1] == 0 && obstacles[m+1] == 0) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-1] - obstacles[0]) == 3))
+            {
+                return true;
+            }
+            else if ((obstacles[m-1] == 1 && obstacles[m+1] == 0) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-1] - obstacles[0]) == 3))
+            {
+                if (deadLockedPoint(neighbours[obstacles[m-2]], node))
+                    return true;
+            }
+            else if ((obstacles[m-1] == 0 && obstacles[m+1] == 1) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-1] - obstacles[0]) == 3))
+            {
+                if (deadLockedPoint(neighbours[obstacles[m]], node))
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+vector<Point> Tree::getNeighbours(Point point)
+{
+    vector<Point> neighbours;
+
+    neighbours.emplace_back(Point(point.x,point.y-1));
+    neighbours.emplace_back(Point(point.x+1,point.y));
+    neighbours.emplace_back(Point(point.x,point.y+1));
+    neighbours.emplace_back(Point(point.x-1,point.y));
+
+    return neighbours;
 }
 
 string Tree::aStar()
@@ -78,12 +140,12 @@ string Tree::aStar()
     string moves;
 
     int i = 0;
-    openSet.push_back(initialState);
+    openSet.push(initialState);
 
     while (!openSet.empty())
     {
-        Node node = openSet.front();
-        openSet.pop_front();
+        Node node = openSet.top();
+        openSet.pop();
         if (isGoal(node))
             return node.path;
         else
@@ -106,11 +168,10 @@ bool Tree::stateVisited(Node &node)
             return true;
     }
     return false;
-}
 
-void Tree::sortPoints(vector<Point> &list)
-{
 
+
+    //return closedSet.find(node) == closedSet.end();
 }
 
 void Tree::filterAndMerge(Node &node)
@@ -119,15 +180,15 @@ void Tree::filterAndMerge(Node &node)
     node.makeSuccessors();
 
     if (node.goUp != nullptr && isLegalMove(*node.goUp) && !isDeadLock(*node.goUp) && !stateVisited(*node.goUp))
-        openSet.push_back(*node.goUp);
+        openSet.push(*node.goUp);
     if (node.goDown != nullptr && isLegalMove(*node.goDown) && !isDeadLock(*node.goDown) && !stateVisited(*node.goDown))
-        openSet.push_back(*node.goDown);
+        openSet.push(*node.goDown);
     if (node.goLeft != nullptr && isLegalMove(*node.goLeft) && !isDeadLock(*node.goLeft) && !stateVisited(*node.goLeft))
-        openSet.push_back(*node.goLeft);
+        openSet.push(*node.goLeft);
     if (node.goRight != nullptr && isLegalMove(*node.goRight) && !isDeadLock(*node.goRight) && !stateVisited(*node.goRight))
-        openSet.push_back(*node.goRight);
+        openSet.push(*node.goRight);
 
-    quickSort(openSet);
+    //quickSort(openSet);
 
 };
 

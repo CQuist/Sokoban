@@ -1,24 +1,11 @@
 #include <iostream>
 #include "Tree.h"
-#include "/home/quist/dlib/dlib/optimization/max_cost_assignment.h"
 
-int hungarian_algorithm(dlib::matrix<int> cost)
-{
-    std::vector<long> assignment = max_cost_assignment(cost);
-
-    return assignment_cost(cost, assignment);
-}
 
 int main()
 {
-
-    dlib::matrix<int> cost(3,3);
-    cost = 1, 2, 7,
-            2, 2, 4,
-            3, 2, 3;
-
-    cout << hungarian_algorithm(cost) << endl;
-
+    //https://thispointer.com/how-to-use-unordered_set-with-user-defined-classes-tutorial-example/
+    //https://www.geeksforgeeks.org/unorderd_set-in-cpp-stl/
 
     /* PROBLEMS
         måske kan der ikke findes løsning fordi den fastsætter en can på goal
@@ -27,8 +14,9 @@ int main()
         skubbe can ind i can
 
 
-        ny h funktion
         lav deadlock tjek
+        hash table isteadet for search closed set
+        heap istedet for sorting algorithm
         a* om til ida*
 
     */
@@ -51,11 +39,11 @@ int main()
                               {0,0,0,4,4}};
 
 */
-  /*  vector<vector<int>> map = {{0,0,0,3},
-                               {2,0,2,0},
-                               {0,3,0,0},
-                               {3,2,0,0},
-                               {0,1,0,0}};
+/*    vector<vector<int>> map = {{0,2,3,3},
+                               {0,0,0,0},
+                               {2,3,2,0},
+                               {0,2,0,0},
+                               {3,1,0,0}};
 */
     vector<vector<int>> map = {{0,3,0,3},
                                {0,2,4,4},
@@ -63,13 +51,21 @@ int main()
                                {0,2,4,4},
                                {0,1,4,4}};
 
-/*    vector<vector<int>> map = {{0,3},
-                               {1,2},
-                               {0,0}};
+/*    vector<vector<int>> map = {{1,0,0},
+                               {0,3,0},
+                               {0,0,2}};
+*/
+/*    vector<vector<int>> map = {{0,0,0,3,4},
+                               {2,0,2,0,4},
+                               {0,3,0,0,0},
+                               {3,2,0,4,0},
+                               {0,1,0,2,0},
+                               {0,4,4,0,3},
+                               {0,2,0,3,0}};
 */
     Tree testTree(map);
 
-    //cout << testTree.aStar() << endl;
+    cout << testTree.aStar() << endl;
 
 
 

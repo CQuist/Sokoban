@@ -9,6 +9,8 @@
 #include <math.h>
 #include <string>
 #include <deque>
+#include "hungarianMethod/hungarian.hpp"
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -181,13 +183,13 @@ struct Node
                 }
                 else if (*(path.end()-1) == 'l') {
                     goRight = new Node(robotPosition.move("right"), updateCans(), updateGoals(), updateHoles(), updateGoalsWithCans(), g_value, path, "r");
-                    goLeft = new Node(robotPosition.move("left"), updateCanPos("left", canIndex), goalPositions, goalsWithCans, holePositions, g_value, path, "l");
+                    goLeft = new Node(robotPosition.move("left"), updateCanPos("left", canIndex), goalPositions, holePositions, goalsWithCans, g_value, path, "l");
 
                     goUp = new Node(robotPosition.move("right"), canPositions, goalPositions, holePositions, goalsWithCans, g_value, path, "r");
                 }
                 else if (*(path.end()-1) == 'r') {
                     goLeft = new Node(robotPosition.move("left"), updateCans(), updateGoals(), updateHoles(), updateGoalsWithCans(), g_value, path, "l");
-                    goRight = new Node(robotPosition.move("right"), updateCanPos("right", canIndex), goalPositions, goalsWithCans, holePositions, g_value, path, "r");
+                    goRight = new Node(robotPosition.move("right"), updateCanPos("right", canIndex), goalPositions, holePositions, goalsWithCans, g_value, path, "r");
 
                     goDown = new Node(robotPosition.move("left"), canPositions, goalPositions, holePositions, goalsWithCans, g_value, path, "l");
                 }
@@ -206,12 +208,12 @@ struct Node
                 else if (*(path.end()-1) == 'l')
                 {
                     goRight = new Node(robotPosition.move("right"), canPositions, goalPositions, holePositions, goalsWithCans, g_value, path, "r");
-                    goLeft = new Node(robotPosition.move("left"), updateCanPos("left", canIndex), goalPositions, goalsWithCans, holePositions, g_value, path, "l");
+                    goLeft = new Node(robotPosition.move("left"), updateCanPos("left", canIndex), goalPositions, holePositions, goalsWithCans, g_value, path, "l");
                 }
                 else if (*(path.end()-1) == 'r')
                 {
                     goLeft = new Node(robotPosition.move("left"), canPositions, goalPositions, holePositions, goalsWithCans, g_value, path, "l");
-                    goRight = new Node(robotPosition.move("right"), updateCanPos("right", canIndex), goalPositions, goalsWithCans, holePositions, g_value, path, "r");
+                    goRight = new Node(robotPosition.move("right"), updateCanPos("right", canIndex), goalPositions, holePositions, goalsWithCans, g_value, path, "r");
                 }
                 else if (*(path.end()-1) == 'u')
                 {
@@ -263,20 +265,28 @@ struct Node
 
     int h_func()
     {
-        int manhattenValue = 0;
+        vector<vector<int>> outerVector;
+        int playerToCanManhattenValue = 0;
+
         for (int i = 0; i < canPositions.size(); ++i)
         {
-            int dist = INT16_MAX;
+            vector<int> innerVector;
+
             for (int j = 0; j < goalPositions.size(); ++j)
             {
-                int tempDist = abs(canPositions[i].x - goalPositions[j].x) + abs(canPositions[i].y - goalPositions[j].y);
-                if (tempDist < dist)
-                    dist = tempDist;
+                innerVector.push_back(abs(canPositions[i].x - goalPositions[j].x) + abs(canPositions[i].y - goalPositions[j].y));
+
             }
-            manhattenValue += dist;
+            outerVector.push_back(innerVector);
+
+            playerToCanManhattenValue += abs(robotPosition.x - canPositions[i].x) + abs(robotPosition.y - canPositions[i].y);
         }
 
-        return manhattenValue;
+        Hungarian::Matrix costMatrix = outerVector;
+
+        Hungarian::Result minimumCost = Solve(costMatrix, Hungarian::MODE_MINIMIZE_COST);
+
+        return minimumCost.totalCost;// + playerToCanManhattenValue;
     }
 
     int g_func()
@@ -341,6 +351,24 @@ struct Node
 
 };
 
+class nodeCompare
+{
+public:
+    int operator() (Node& n1, Node& n2)
+    {
+        return (n1.getCost()==n2.getCost());
+    }
+};
+
+struct NodeHasher
+{
+    size_t
+    operator()(const Node & node) const
+    {
+        return std::hash<std::string>()(node.path);
+    }
+};
+
 
 class Tree
 {
@@ -354,8 +382,11 @@ public:
 
     Node initialState;
 
-    deque<Node> openSet;
+    priority_queue <Node, vector<Node>, nodeCompare> openSet;
+
+    //deque<Node> openSet;
     vector<Node> closedSet;
+    //unordered_set<Node, NodeHasher, nodeCompare> closedSet;
 
     int width = 0;
     int height = 0;
@@ -364,9 +395,11 @@ public:
     bool isGoal(Node &node);
     bool isDeadLock(Node &node);
     bool isLegalMove(Node &node);
-    void sortPoints(vector<Point> & list);
+    vector<Point> getNeighbours(Point point);
     void filterAndMerge(Node &node);
     char backWards(char &step);
+
+    bool deadLockedPoint(Point point, Node &node);
 
 
     static const int CUTOFF = 3;
