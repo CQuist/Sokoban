@@ -4,12 +4,18 @@
 
 int main()
 {
-    //https://thispointer.com/how-to-use-unordered_set-with-user-defined-classes-tutorial-example/
-    //https://www.geeksforgeeks.org/unorderd_set-in-cpp-stl/
+        /* PROBLEMS
 
-    /* PROBLEMS
+        improve memory mangement
+         destroy unused node (the once not added to open list)
 
-        FIX DEADLOCK FUNCTION!
+         deadlock func not working properly
+         x x
+         x 0
+
+         not working
+
+
         a* om til ida*
 
     */
@@ -19,8 +25,8 @@ int main()
     // 2 = CAN
     // 3 = GOAL
     // 4 = INACCESSIBLE
-/*
-    vector<vector<int>> map = {{0,0,0,3,0},
+
+/*    vector<vector<int>> map = {{0,0,0,3,0},
                               {0,0,0,0,0},
                               {3,0,3,0,3},
                               {0,0,4,0,4},
@@ -31,13 +37,13 @@ int main()
                               {0,2,1,0,0},
                               {0,0,0,4,4}};
 */
-
+/*
     vector<vector<int>> map = {{0,2,3,3},
                                {0,0,0,0},
                                {2,3,2,0},
                                {0,2,0,0},
                                {3,1,0,0}};
-
+*/
 /*    vector<vector<int>> map = {{0,3,0,3},
                                {0,2,4,4},
                                {0,0,4,4},
@@ -57,12 +63,12 @@ int main()
                                {0,2,0,3,0}};
 */
     // DEADLOCK EXAMPLE
-/*    vector<vector<int>> map = {{0,3,0,3},
-                               {0,2,4,4},
-                               {0,0,4,4},
-                               {0,0,4,4},
-                               {2,1,4,4}};
-*/
+    vector<vector<int>> map = {{0,0,0,3},
+                               {0,4,4,0},
+                               {0,4,2,0},
+                               {0,0,0,0},
+                               {0,1,0,0}};
+
     Tree testTree(map);
 
     cout << testTree.aStar() << endl;

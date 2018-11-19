@@ -37,8 +37,8 @@ public:
     void filterAndMerge(Node &node);
     char backWards(char &step);
 
-    bool deadLockedPoint(Point point, Node &node);
-    bool outOfBounds(Point point);
+    bool deadLockedPoint(Point point, Point prevPoint, Node &node);
+    bool outOfBounds(Point poinjt);
 
     static void bubbleSort(vector<Point> &array);
     static void bubbleSort(vector<Point> &array, int left, int right);
