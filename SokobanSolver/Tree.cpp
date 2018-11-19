@@ -46,8 +46,6 @@ string Tree::aStar()
 
     while (!openSet.empty())
     {
-        if (i == 1618)
-            cout << "here" << endl;
         Node node = openSet.top();
         openSet.pop();
         if (isGoal(node))
@@ -97,7 +95,7 @@ bool Tree::isDeadLock(Node &node)
                 canOnGoal = true;
         }
 
-        if (deadLockedPoint(node.canPositions[i], node.canPositions[i], node) && !canOnGoal) {
+        if (deadLockedPoint(node.canPositions[i], node.canPositions[i], node.canPositions[i], node) && !canOnGoal) {
             cout << "DEADLOCK ON CAN AT: " << node.canPositions[i].x << node.canPositions[i].y << endl;
             return true;
         }
@@ -106,7 +104,7 @@ bool Tree::isDeadLock(Node &node)
     return false;
 }
 
-bool Tree::deadLockedPoint(Point point, Point prevPoint,  Node &node)
+bool Tree::deadLockedPoint(Point &point, Point &prevPoint, Point &originalPoint, Node &node)
 {
 
     vector<int> obstacles;
@@ -139,36 +137,36 @@ bool Tree::deadLockedPoint(Point point, Point prevPoint,  Node &node)
     }
     for (int m = 2; m < obstacles.size(); m = m+2)
     {
-        if ((obstacles[m-1] == 0 && obstacles[m+1] == 0) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-1] - obstacles[0]) == 3))
+        if ((obstacles[m-1] == 0 && obstacles[m+1] == 0) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-2] - obstacles[0]) == 3))
         {
             return true;
         }
-        else if ((obstacles[m-1] == 1 && obstacles[m+1] == 0) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-1] - obstacles[0]) == 3))
+        else if ((obstacles[m-1] == 1 && obstacles[m+1] == 0) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-2] - obstacles[0]) == 3))
         {
-            if (neighbours[obstacles[m-2]] == prevPoint)
+            if (neighbours[obstacles[m-2]] == prevPoint || neighbours[obstacles[m-2]] == originalPoint)
                 return true;
-            else if (deadLockedPoint(neighbours[obstacles[m-2]], point, node))
+            else if (deadLockedPoint(neighbours[obstacles[m-2]], point, originalPoint, node))
                 return true;
         }
-        else if ((obstacles[m-1] == 0 && obstacles[m+1] == 1) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-1] - obstacles[0]) == 3))
+        else if ((obstacles[m-1] == 0 && obstacles[m+1] == 1) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-2] - obstacles[0]) == 3))
         {
-            if (neighbours[obstacles[m]] == prevPoint)
+            if (neighbours[obstacles[m]] == prevPoint || neighbours[obstacles[m]] == originalPoint)
                 return true;
-            else if (deadLockedPoint(neighbours[obstacles[m]], point, node))
+            else if (deadLockedPoint(neighbours[obstacles[m]], point, originalPoint, node))
                 return true;
         }
-        else if ((obstacles[m-1] == 1 && obstacles[m+1] == 1) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-1] - obstacles[0]) == 3))
+        else if ((obstacles[m-1] == 1 && obstacles[m+1] == 1) && (abs(obstacles[m-2] - obstacles[m]) == 1 || abs(obstacles[obstacles.size()-2] - obstacles[0]) == 3))
         {
             bool tempBool = false;
-            if (neighbours[obstacles[m]] == prevPoint)
+            if (neighbours[obstacles[m]] == prevPoint || neighbours[obstacles[m]] == originalPoint)
                 tempBool = true;
-            else if (deadLockedPoint(neighbours[obstacles[m]], point, node))
+            else if (deadLockedPoint(neighbours[obstacles[m]], point, originalPoint, node))
                 tempBool = true;
 
             bool tempBool2 = false;
-            if (neighbours[obstacles[m-2]] == prevPoint)
+            if (neighbours[obstacles[m-2]] == prevPoint || neighbours[obstacles[m-2]] == originalPoint)
                 tempBool2 = true;
-            else if (deadLockedPoint(neighbours[obstacles[m-2]], point, node))
+            else if (deadLockedPoint(neighbours[obstacles[m-2]], point, originalPoint, node))
                 tempBool2 = true;
 
             return  (tempBool && tempBool2);
