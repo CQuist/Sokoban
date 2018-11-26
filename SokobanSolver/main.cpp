@@ -38,6 +38,36 @@ int main()
         a* om til ida*
 
     */
+/*
+    vector<Point> canPos;
+    canPos.emplace_back(Point(0,2));
+    canPos.emplace_back(Point(1,2));
+    vector<Point> goalPos;
+    goalPos.emplace_back(Point(2,0));
+    goalPos.emplace_back(Point(2,1));
+    vector<Point> holePos;
+    holePos.emplace_back(Point(2,2));
+    holePos.emplace_back(Point(2,3));
+    holePos.emplace_back(Point(3,2));
+    Point robotPos = Point(1,1);
+    string path = "AA";
+    string nextStep = "B   ";
+    NodeV2 tempNode(robotPos, canPos, goalPos, holePos, path, nextStep);
+
+    Tree newTestTree;
+    newTestTree.width = 4;
+    newTestTree.height = 4;
+
+
+    for (int i = 0; i < newTestTree.width; ++i)
+    {
+        for (int j = 0; j < newTestTree.height; ++j)
+        {
+            Point destination(i,j);
+            cout << "Destination: " << i << "," << j << "  " << newTestTree.isLegalRobotMove(tempNode, destination, path) << " " << path << endl;
+        }
+    }
+*/
 
     // 0 = EMPTY
     // 1 = ROBOT
@@ -73,14 +103,20 @@ int main()
                                {0,3,0},
                                {0,0,2}};
 */
-/*    vector<vector<int>> map = {{0,0,0,3,4},
+    //Index: 88546 h: 1 g: 0 Total Cost: 1
+    //Index: 88547 h: 1 g: 0 Total Cost: 1
+    //Index: 88548 h: 1 g: 0 Total Cost: 1
+    //Index: 88549 h: 0 g: 0 Total Cost: 0
+    //rrrlluuuudlurrllldddurrrrdddullluuddlddrrr
+
+    vector<vector<int>> map = {{0,0,0,3,4},
                                {2,0,2,0,4},
                                {0,3,0,0,0},
                                {3,2,0,4,0},
                                {0,1,0,2,0},
                                {0,4,4,0,3},
                                {0,2,0,3,0}};
-*/
+
     // DEADLOCK EXAMPLE
 /*    vector<vector<int>> map = {{0,0,3,0},
                                {0,2,2,0},
@@ -89,7 +125,7 @@ int main()
                                {0,1,0,0}};
 
 */
-    vector<vector<int>> map = {{3,0,0,0,0},
+/*    vector<vector<int>> map = {{3,0,0,0,0},
                                {0,0,0,0,0},
                                {3,4,3,0,3},
                                {4,4,4,0,4},
@@ -99,13 +135,14 @@ int main()
                                {0,2,0,2,1},
                                {0,0,0,0,0},
                                {0,0,0,4,4}};
-
+*/
 /*
- * Index: 1546923 h: 1 g: 106 Robot pos: 1,0 number of complted cans: 2
-Index: 1546924 h: 14 g: 93 Robot pos: 0,6 number of complted cans: 1
-Index: 1546925 h: 27 g: 80 Robot pos: 1,8 number of complted cans: 0
-Index: 1546926 h: 30 g: 77 Robot pos: 0,8 number of complted cans: 0
-lldlluuuurrrldruuuudrullrdddlllddruudlurrrldruuuudruulddulllrulddurrdrrldddllldddruuuudlurrrldruuuuudrullll
+    //Index: 1546923 h: 1 g: 106 Robot pos: 1,0 number of complted cans: 2
+    //Index: 1546924 h: 14 g: 93 Robot pos: 0,6 number of complted cans: 1
+    //Index: 1546925 h: 27 g: 80 Robot pos: 1,8 number of complted cans: 0
+    //Index: 1546926 h: 30 g: 77 Robot pos: 0,8 number of complted cans: 0
+    //lldlluuuurrrldruuuudrullrdddlllddruudlurrrldruuuudruulddulllrulddurrdrrldddllldddruuuudlurrrldruuuuudrullll
+
     vector<vector<int>> map = {{3,0,0,0,0},
                                {0,0,0,0,0},
                                {3,4,0,0,3},

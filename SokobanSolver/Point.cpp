@@ -15,7 +15,7 @@ Point::Point(int x, int y)
     this->y = y;
 }
 
-Point Point::move(string dir)
+Point Point::neighbour(string dir)
 {
     if (dir == "up")
         return Point(x,y-1);

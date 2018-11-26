@@ -5,10 +5,9 @@
 #pragma once
 
 #include <iostream>
-#include "Node.h"
+#include "NodeV2.h"
 #include <math.h>
 #include <bits/stdc++.h>
-
 #include <sys/sysinfo.h>
 
 using namespace std;
@@ -21,31 +20,38 @@ public:
 
     string aStar();
 
-    unsigned long get_mem_total();
+private:
+    NodeV2 initialState;
+    vector <Point> goalPositions;
+    vector <Point> holePositions;
 
-    Node initialState;
+    priority_queue <NodeV2, vector<NodeV2>, nodeCostCompare> openSet;
 
-    priority_queue <Node, vector<Node>, nodeCostCompare> openSet;
-
-    //vector<Node> closedSet;
-    unordered_set<Node, KeyHasher> closedSet;
+    unordered_set<NodeV2, KeyHasher> closedSet;
 
     int width = 0;
     int height = 0;
 
-    bool stateVisited(Node &node);
-    bool isGoal(Node &node);
-    bool isDeadLock(Node &node);
-    bool isLegalMove(Node &node);
-    vector<Point> getNeighbours(Point point);
-    void filterAndMerge(Node &node);
-    char backWards(char &step);
+    void makeSuccessors(NodeV2 &node);
+    void h_func(NodeV2 &node);
 
-    bool deadLockedPoint(Point &point, Point &prevPoint, Point &originalPoint, Node &node);
-    bool outOfBounds(Point poinjt);
+    bool isLegalRobotMove(NodeV2 &node, Point &dest, string &pathToPoint);
+    bool isLegalCanMove(NodeV2 &node, Point &dest);
+    bool isDeadLock(NodeV2 &node);
+    bool deadLockedPoint(Point &point, Point &prevPoint, Point &originalPoint, NodeV2 &node);
+    bool stateVisited(NodeV2 &node);
+    bool outOfBounds(Point point);
+    bool isGoal(NodeV2 &node);
+
+    int robotGotCan(NodeV2 &node);
+
+    vector<Point> updateCans(vector<Point> &canPos, Point &newPoint, int index);
+    vector<Point> getNeighbours(Point point);
 
     static void bubbleSort(vector<Point> &array);
     static void bubbleSort(vector<Point> &array, int left, int right);
     inline static void swap(vector<Point> &array, int i, int j);
+
+    unsigned long get_mem_total();
 
 };

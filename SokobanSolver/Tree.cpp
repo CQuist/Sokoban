@@ -6,12 +6,13 @@
 #include <algorithm>
 #include <vector>
 #include "Tree.h"
+#include <iomanip>
 
 Tree::Tree() {}
 
 Tree::Tree(vector<vector<int>> &map)
 {
-    Node initialState;
+    NodeV2 initialState;
     for (int i = 0; i < map.size(); ++i)
     {
         for (int j = 0; j < map[i].size(); ++j) {
@@ -22,56 +23,39 @@ Tree::Tree(vector<vector<int>> &map)
             else if (map[i][j] == 2 )
                 initialState.canPositions.emplace_back(Point(j,i));
             else if  (map[i][j] == 3 )
-                initialState.goalPositions.emplace_back(Point(j,i));
+                goalPositions.emplace_back(Point(j,i));
             else if  (map[i][j] == 4 )
-                initialState.holePositions.emplace_back(Point(j,i));
+                holePositions.emplace_back(Point(j,i));
         }
     }
 
     this->height = (int)map.size();
     this->width = (int)map[1].size();
 
-    bubbleSort(initialState.goalPositions);
+    bubbleSort(goalPositions);
 
     this->initialState = initialState;
 
 }
 
-unsigned long Tree::get_mem_total() {
-    std::string token;
-    std::ifstream file("/proc/meminfo");
-    while(file >> token) {
-        if(token == "MemAvailable:") {
-            unsigned long mem;
-            if(file >> mem) {
-                return mem;
-            } else {
-                return 0;
-            }
-        }
-        // ignore rest of the line
-        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-    return 0; // nothing found
-}
-
 string Tree::aStar()
 {
-    string output;
-
     int i = 0;
     openSet.push(initialState);
 
     while (!openSet.empty())
     {
-        Node node = openSet.top();
+        NodeV2 node = openSet.top();
         openSet.pop();
+
+        cout << "Index: " << setw(8) << i << "  |  h: " << setw(3) << node.h << "  |  g: " << setw(3) <<  node.path.size() << "  |  Cost: " << setw(3) <<  node.h+node.path.size() << endl;
+
         if (isGoal(node))
             return node.path;
         else
         {
-            filterAndMerge(node);
-            cout << "Index: " << i << " h: " <<  node.h << " g: " << node.g << " Total Cost: " << node.h+node.g << endl;
+            closedSet.insert(node);
+            makeSuccessors(node);
             if (get_mem_total() < 1000000)
                 return "OUT OF MEMORY";
         }
@@ -82,35 +66,256 @@ string Tree::aStar()
 }
 
 
-bool Tree::isGoal(Node &node)
+void Tree::makeSuccessors(NodeV2 &node)
 {
-    if (node.goalPositions.size() == 1 && node.goalPositions[0] == node.canPositions[0])
+    int canIndex = robotGotCan(node);
+    if (canIndex == -1)
     {
-        vector<Point> canPos = node.goalsWithCans;
-        canPos.push_back(node.canPositions[0]);
-        vector<Point> goalPos = initialState.goalPositions;
-        if (canPos.size() != goalPos.size())
-            return false;
+        for (int i = 0; i < node.canPositions.size(); ++i)
+        {
+            Point leftNeighbour = node.canPositions[i].neighbour("left");
+            Point rightNeighbour = node.canPositions[i].neighbour("right");
+            Point upNeighbour = node.canPositions[i].neighbour("up");
+            Point downNeighbour = node.canPositions[i].neighbour("down");
 
-        bubbleSort(canPos);
-        bubbleSort(goalPos);
+            string path = "";
 
-        for (int i = 0; i < canPos.size(); ++i) {
-            if (canPos[i] != goalPos[i])
-                return false;
+            //move can right
+            if (isLegalCanMove(node, rightNeighbour) && isLegalRobotMove(node, leftNeighbour, path))
+            {
+                path.append("rr");
+                vector<Point> newCanPos = updateCans(node.canPositions, rightNeighbour, i);
+                NodeV2 tempNode(rightNeighbour, newCanPos, path);
+                if (!isDeadLock(tempNode) && !stateVisited(tempNode)){
+                    h_func(tempNode);
+                    openSet.emplace(tempNode);
+                }
+            }
+
+            //move can left
+            if (isLegalCanMove(node, leftNeighbour) && isLegalRobotMove(node, rightNeighbour, path))
+            {
+                path.append("ll");
+                vector<Point> newCanPos = updateCans(node.canPositions, leftNeighbour, i);
+                NodeV2 tempNode(leftNeighbour, newCanPos, path);
+                if (!isDeadLock(tempNode) && !stateVisited(tempNode)){
+                    h_func(tempNode);
+                    openSet.emplace(tempNode);
+                }
+            }
+
+            //move can up
+            if (isLegalCanMove(node, upNeighbour) && isLegalRobotMove(node, downNeighbour, path))
+            {
+                path.append("uu");
+                vector<Point> newCanPos = updateCans(node.canPositions, upNeighbour, i);
+                NodeV2 tempNode(upNeighbour, newCanPos, path);
+                if (!isDeadLock(tempNode) && !stateVisited(tempNode)){
+                    h_func(tempNode);
+                    openSet.emplace(tempNode);
+                }
+            }
+
+            //move can down
+            if (isLegalCanMove(node, downNeighbour) && isLegalRobotMove(node, upNeighbour, path))
+            {
+                path.append("dd");
+                vector<Point> newCanPos = updateCans(node.canPositions, downNeighbour, i);
+                NodeV2 tempNode(downNeighbour, newCanPos, path);
+                if (!isDeadLock(tempNode) && !stateVisited(tempNode)){
+                    h_func(tempNode);
+                    openSet.emplace(tempNode);
+                }
+            }
         }
-        return true;
     }
+    else
+    {
+        Point leftNeighbour = node.canPositions[canIndex].neighbour("left");
+        Point rightNeighbour = node.canPositions[canIndex].neighbour("right");
+        Point upNeighbour = node.canPositions[canIndex].neighbour("up");
+        Point downNeighbour = node.canPositions[canIndex].neighbour("down");
+        string path = "";
+
+        // Last move with can was right
+        if (*(node.path.end()-1) == 'r')
+        {
+            if (isLegalCanMove(node, rightNeighbour))
+            {
+                path.append("r");
+                vector<Point> newCanPos = updateCans(node.canPositions, rightNeighbour, canIndex);
+                NodeV2 tempNode(rightNeighbour, newCanPos, node.path, path);
+                if (!isDeadLock(tempNode) && !stateVisited(tempNode)){
+                    h_func(tempNode);
+                    openSet.emplace(tempNode);
+                }
+            }
+
+            path.clear();
+            path.append("l");
+            NodeV2 tempNode(leftNeighbour, node.canPositions, node.path, path);
+            tempNode.h = node.h;
+            openSet.emplace(tempNode);
+        }// Last move with can was left
+        else if (*(node.path.end()-1) == 'l')
+        {
+            if (isLegalCanMove(node, leftNeighbour))
+            {
+                path.append("l");
+                vector<Point> newCanPos = updateCans(node.canPositions, leftNeighbour, canIndex);
+                NodeV2 tempNode(leftNeighbour, newCanPos, node.path, path);
+                if (!isDeadLock(tempNode) && !stateVisited(tempNode)){
+                    h_func(tempNode);
+                    openSet.emplace(tempNode);
+                }
+            }
+
+            path.clear();
+            path.append("r");
+            NodeV2 tempNode(rightNeighbour, node.canPositions, node.path, path);
+            tempNode.h = node.h;
+            openSet.emplace(tempNode);
+        }// Last move with can was up
+        else if (*(node.path.end()-1) == 'u')
+        {
+            if (isLegalCanMove(node, upNeighbour))
+            {
+                path.append("u");
+                vector<Point> newCanPos = updateCans(node.canPositions, upNeighbour, canIndex);
+                NodeV2 tempNode(upNeighbour, newCanPos, node.path, path);
+                if (!isDeadLock(tempNode) && !stateVisited(tempNode)){
+                    h_func(tempNode);
+                    openSet.emplace(tempNode);
+                }
+            }
+
+            path.clear();
+            path.append("d");
+            NodeV2 tempNode(downNeighbour, node.canPositions, node.path, path);
+            tempNode.h = node.h;
+            openSet.emplace(tempNode);
+        }// Last move with can was down
+        else if (*(node.path.end()-1) == 'd')
+        {
+            if (isLegalCanMove(node, downNeighbour))
+            {
+                path.append("d");
+                vector<Point> newCanPos = updateCans(node.canPositions, downNeighbour, canIndex);
+                NodeV2 tempNode(downNeighbour, newCanPos, node.path, path);
+                if (!isDeadLock(tempNode) && !stateVisited(tempNode)){
+                    h_func(tempNode);
+                    openSet.emplace(tempNode);
+                }
+            }
+
+            path.clear();
+            path.append("u");
+            NodeV2 tempNode(upNeighbour, node.canPositions, node.path, path);
+            tempNode.h = node.h;
+            openSet.emplace(tempNode);
+        }
+    }
+}
+
+vector<Point> Tree::updateCans(vector<Point> &canPos, Point &newPoint, int index)
+{
+    vector<Point> tempCanPos = canPos;
+    tempCanPos[index] = newPoint;
+    return tempCanPos;
+}
+
+bool Tree::isLegalRobotMove(NodeV2 &passedNode, Point &dest, string &pathToPoint)
+{
+    pathToPoint.clear();
+    deque<NodeV2> openList;
+    openList.push_back(passedNode);
+    unordered_set<NodeV2, KeyHasher> closedList;
+
+    while (!openList.empty())
+    {
+        NodeV2 node = openList.front();
+        openList.pop_front();
+        if (node.robotPosition == dest)
+        {
+            pathToPoint = node.path;
+            return true;
+        }
+        else if ((closedList.find(node) == closedList.end()))
+        {
+            closedList.insert(node);
+
+            Point leftNeighbour = node.robotPosition.neighbour("left");
+            Point rightNeighbour = node.robotPosition.neighbour("right");
+            Point upNeighbour = node.robotPosition.neighbour("up");
+            Point downNeighbour = node.robotPosition.neighbour("down");
+
+            if (isLegalCanMove(node, leftNeighbour))
+            {
+                openList.emplace_back(NodeV2(leftNeighbour, node.canPositions, node.path, "l"));
+            }
+            if (isLegalCanMove(node, rightNeighbour))
+            {
+                openList.emplace_back(NodeV2(rightNeighbour, node.canPositions, node.path, "r"));
+            }
+            if (isLegalCanMove(node, upNeighbour))
+            {
+                openList.emplace_back(NodeV2(upNeighbour, node.canPositions, node.path, "u"));
+            }
+            if (isLegalCanMove(node, downNeighbour))
+            {
+                openList.emplace_back(NodeV2(downNeighbour, node.canPositions, node.path, "d"));
+            }
+        }
+    }
+
+
     return false;
 }
 
-bool Tree::isDeadLock(Node &node)
+bool Tree::isLegalCanMove(NodeV2 &node, Point &dest)
+{
+    if (outOfBounds(dest))
+        return false;
+
+    for (int i = 0; i < holePositions.size(); ++i)
+        if (dest == holePositions[i])
+            return false;
+
+    for (int j = 0; j < node.canPositions.size(); ++j)
+    {
+        if (dest == node.canPositions[j])
+            return false;
+    }
+
+    return true;
+}
+
+bool Tree::outOfBounds(Point point)
+{
+    return (point.x >= width || point.x < 0 || point.y < 0 || point.y >= height);
+};
+
+bool Tree::isGoal(NodeV2 &node)
+{
+    vector<Point> canPos = node.canPositions;
+    bubbleSort(canPos);
+
+    for (int j = 0; j < canPos.size(); ++j)
+    {
+        if(canPos[j] != goalPositions[j])
+            return false;
+    }
+
+    return true;
+}
+
+bool Tree::isDeadLock(NodeV2 &node)
 {
     for (int i = 0; i < node.canPositions.size(); ++i)
     {
         bool canOnGoal = false;
-        for (int j = 0; j < node.goalPositions.size(); ++j) {
-            if (node.canPositions[i] == node.goalPositions[j])
+        for (int j = 0; j < goalPositions.size(); ++j) {
+            if (node.canPositions[i] == goalPositions[j])
                 canOnGoal = true;
         }
 
@@ -123,7 +328,7 @@ bool Tree::isDeadLock(Node &node)
     return false;
 }
 
-bool Tree::deadLockedPoint(Point &point, Point &prevPoint, Point &originalPoint, Node &node)
+bool Tree::deadLockedPoint(Point &point, Point &prevPoint, Point &originalPoint, NodeV2 &node)
 {
 
     vector<int> obstacles;
@@ -137,9 +342,9 @@ bool Tree::deadLockedPoint(Point &point, Point &prevPoint, Point &originalPoint,
         }
 
 
-        for (int k = 0; k < initialState.holePositions.size(); ++k)
+        for (int k = 0; k < holePositions.size(); ++k)
         {
-            if (neighbours[j] == initialState.holePositions[k])
+            if (neighbours[j] == holePositions[k])
             {
                 obstacles.push_back(j);
                 obstacles.push_back(0);
@@ -206,67 +411,45 @@ vector<Point> Tree::getNeighbours(Point point)
     return neighbours;
 }
 
-bool Tree::outOfBounds(Point point)
-{
-    return (point.x >= width || point.x < 0 || point.y < 0 || point.y >= height);
-};
-
-bool Tree::stateVisited(Node &node)
+bool Tree::stateVisited(NodeV2 &node)
 {
     return !(closedSet.find(node) == closedSet.end());
 }
 
-void Tree::filterAndMerge(Node &node)
+int Tree::robotGotCan(NodeV2 &node)
 {
-    closedSet.insert(node);
-    node.makeSuccessors();
-
-    if (node.goUp != nullptr && isLegalMove(*node.goUp) && !isDeadLock(*node.goUp) && !stateVisited(*node.goUp))
-        openSet.push(*node.goUp);
-    if (node.goDown != nullptr && isLegalMove(*node.goDown) && !isDeadLock(*node.goDown) && !stateVisited(*node.goDown))
-        openSet.push(*node.goDown);
-    if (node.goLeft != nullptr && isLegalMove(*node.goLeft) && !isDeadLock(*node.goLeft) && !stateVisited(*node.goLeft))
-        openSet.push(*node.goLeft);
-    if (node.goRight != nullptr && isLegalMove(*node.goRight) && !isDeadLock(*node.goRight) && !stateVisited(*node.goRight))
-        openSet.push(*node.goRight);
-};
-
-bool Tree::isLegalMove(Node &node)
-{
-    if (outOfBounds(node.robotPosition))
-        return false;
-
-    for (int i = 0; i < node.holePositions.size(); ++i)
-        if (node.robotPosition == node.holePositions[i])
-            return false;
-
-    int k = 0;
-    for (int j = 0; j < node.canPositions.size(); ++j)
+    for (int i = 0; i < node.canPositions.size(); ++i)
     {
-        if (node.robotPosition == node.canPositions[j])
-            k++;
-        if (k > 1)
-            return false;
+        if (node.robotPosition == node.canPositions[i])
+            return i;
     }
-
-
-    bool tempBool = false;
-    if ((node.canIndex != -1 && (*(node.path.end()-1) == *(node.path.end()-2) || *(node.path.end()-1) == backWards(*(node.path.end()-2)) || node.path.size() < 2)) || (node.canIndex == -1))
-        tempBool = true;
-
-    return tempBool;
+    return -1;
 }
 
-char Tree::backWards(char &step)
+void Tree::h_func(NodeV2 &node)
 {
-    if (step == 'u')
-        return 'd';
-    if (step == 'd')
-        return 'u';
-    if (step == 'r')
-        return 'l';
-    if (step == 'l')
-        return 'r';
+    vector<vector<int>> outerVector;
+    //int playerToCanManhattenValue = 0;
+
+    for (int i = 0; i < node.canPositions.size(); ++i)
+    {
+        vector<int> innerVector;
+
+        for (int j = 0; j < goalPositions.size(); ++j)
+        {
+            innerVector.push_back(abs(node.canPositions[i].x - goalPositions[j].x) + abs(node.canPositions[i].y - goalPositions[j].y));
+
+        }
+        outerVector.push_back(innerVector);
+
+        //playerToCanManhattenValue += abs(node.robotPosition.x - node.canPositions[i].x) + abs(node.robotPosition.y - node.canPositions[i].y);
+    }
+
+    Hungarian::Matrix costMatrix = outerVector;
+
+    Hungarian::Result minimumCost = Solve(costMatrix, Hungarian::MODE_MINIMIZE_COST);
+
+    node.h = minimumCost.totalCost;// + playerToCanManhattenValue;
 }
 
 void Tree::bubbleSort(vector<Point> &array)
@@ -297,4 +480,22 @@ inline void Tree::swap(vector<Point> &array, int i, int j)
     Point indexI = array[i];
     array[i] = array[j];
     array[j] = indexI;
+}
+
+unsigned long Tree::get_mem_total() {
+    std::string token;
+    std::ifstream file("/proc/meminfo");
+    while(file >> token) {
+        if(token == "MemAvailable:") {
+            unsigned long mem;
+            if(file >> mem) {
+                return mem;
+            } else {
+                return 0;
+            }
+        }
+        // ignore rest of the line
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    return 0; // nothing found
 }

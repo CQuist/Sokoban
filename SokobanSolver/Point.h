@@ -13,7 +13,7 @@ public:
     Point();
     Point(int x, int y);
 
-    Point move(string dir);
+    Point neighbour(string dir);
     bool operator==(const Point p) const;
     bool operator<(Point p);
     bool operator>(Point p);
