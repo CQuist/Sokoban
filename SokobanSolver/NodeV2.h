@@ -17,7 +17,6 @@ public:
     Point robotPosition;
 
     int h = INT16_MAX;
-    int g = 0;
 
     string path = "";
 

@@ -1,9 +1,10 @@
 #include <iostream>
 #include "Tree.h"
-
+#include <chrono>
 
 int main()
 {
+    std::chrono::seconds startTime = std::chrono::duration_cast< std::chrono::seconds >(std::chrono::system_clock::now().time_since_epoch());
     /*
     priority_queue <Node, vector<Node>, nodeCostCompare> openSet;
 
@@ -75,7 +76,7 @@ int main()
     // 3 = GOAL
     // 4 = INACCESSIBLE
 
-/*    vector<vector<int>> map = {{0,0,0,3,0},
+    vector<vector<int>> map = {{0,0,0,3,0},
                               {0,0,0,0,0},
                               {3,0,3,0,3},
                               {0,0,4,0,4},
@@ -85,7 +86,7 @@ int main()
                               {0,2,2,0,0},
                               {0,2,1,0,0},
                               {0,0,0,4,4}};
-*/
+
     /*
     vector<vector<int>> map = {{0,2,3,3},
                                {0,0,0,0},
@@ -108,7 +109,7 @@ int main()
     //Index: 88548 h: 1 g: 0 Total Cost: 1
     //Index: 88549 h: 0 g: 0 Total Cost: 0
     //rrrlluuuudlurrllldddurrrrdddullluuddlddrrr
-
+/*
     vector<vector<int>> map = {{0,0,0,3,4},
                                {2,0,2,0,4},
                                {0,3,0,0,0},
@@ -116,7 +117,7 @@ int main()
                                {0,1,0,2,0},
                                {0,4,4,0,3},
                                {0,2,0,3,0}};
-
+*/
     // DEADLOCK EXAMPLE
 /*    vector<vector<int>> map = {{0,0,3,0},
                                {0,2,2,0},
@@ -125,6 +126,9 @@ int main()
                                {0,1,0,0}};
 
 */
+    // 2018 COMP MAP
+    //Index:  6762875  |  h:   0  |  g: 151  |  Cost: 151
+    //dlllluuuurrrldruuuuuddddlllddruudlurrrldruuuudrullllrulddurrrdddlllddddruuuudlurrrldruuuudrullrdddlldddrdrrulllrdluuuudlurrrldruuuudruullllrrddurrlurdd
 /*    vector<vector<int>> map = {{3,0,0,0,0},
                                {0,0,0,0,0},
                                {3,4,3,0,3},
@@ -136,14 +140,17 @@ int main()
                                {0,0,0,0,0},
                                {0,0,0,4,4}};
 */
-/*
+
     //Index: 1546923 h: 1 g: 106 Robot pos: 1,0 number of complted cans: 2
     //Index: 1546924 h: 14 g: 93 Robot pos: 0,6 number of complted cans: 1
     //Index: 1546925 h: 27 g: 80 Robot pos: 1,8 number of complted cans: 0
     //Index: 1546926 h: 30 g: 77 Robot pos: 0,8 number of complted cans: 0
     //lldlluuuurrrldruuuudrullrdddlllddruudlurrrldruuuudruulddulllrulddurrdrrldddllldddruuuudlurrrldruuuuudrullll
 
-    vector<vector<int>> map = {{3,0,0,0,0},
+    //Index:   177700  |  h:  18  |  g:  88  |  Cost: 106
+    //Index:   177701  |  h:   0  |  g: 107  |  Cost: 107
+    //lldlluuuurrrldruuuudrullllrulddurrrdddlllddruudlurrrldruuuuuddddlllddddruuuudlurrrldruuuudruullllrrdrrlurdd
+/*    vector<vector<int>> map = {{3,0,0,0,0},
                                {0,0,0,0,0},
                                {3,4,0,0,3},
                                {4,4,4,0,4},
@@ -157,6 +164,9 @@ int main()
     Tree testTree(map);
 
     cout << testTree.aStar() << endl;
+    std::chrono::seconds endTime = std::chrono::duration_cast< std::chrono::seconds >(std::chrono::system_clock::now().time_since_epoch());
+    std::chrono::seconds runTime = std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime);
+    cout << runTime.count() << endl;
 
 
 
