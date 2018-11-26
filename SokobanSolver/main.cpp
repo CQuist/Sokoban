@@ -4,17 +4,36 @@
 
 int main()
 {
+    /*
+    priority_queue <Node, vector<Node>, nodeCostCompare> openSet;
+
+    for (int i = 0; i < 1000; ++i)
+    {
+        Node tempnode;
+        tempnode.h = rand() % 100;
+        tempnode.g = rand() % 100;
+        openSet.push(tempnode);
+        cout << tempnode.h << " " << tempnode.g << " " << tempnode.getCost() << endl;
+    }
+
+    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+
+    int j = 0;
+    while (!openSet.empty())
+    {
+        Node tempNode = openSet.top();
+        cout << tempNode.getCost() << " " << tempNode.h << " " << endl;
+        openSet.pop();
+        j++;
+    }
+    */
+
+
+
         /* PROBLEMS
 
         improve memory mangement
-         destroy unused node (the once not added to open list)
-
-         deadlock func not working properly
-         x x
-         x 0
-
-         not working
-
+        destroy unused node (the once not added to open list)
 
         a* om til ida*
 
@@ -54,7 +73,7 @@ int main()
                                {0,3,0},
                                {0,0,2}};
 */
-  /*  vector<vector<int>> map = {{0,0,0,3,4},
+/*    vector<vector<int>> map = {{0,0,0,3,4},
                                {2,0,2,0,4},
                                {0,3,0,0,0},
                                {3,2,0,4,0},
@@ -81,7 +100,23 @@ int main()
                                {0,0,0,0,0},
                                {0,0,0,4,4}};
 
-
+/*
+ * Index: 1546923 h: 1 g: 106 Robot pos: 1,0 number of complted cans: 2
+Index: 1546924 h: 14 g: 93 Robot pos: 0,6 number of complted cans: 1
+Index: 1546925 h: 27 g: 80 Robot pos: 1,8 number of complted cans: 0
+Index: 1546926 h: 30 g: 77 Robot pos: 0,8 number of complted cans: 0
+lldlluuuurrrldruuuudrullrdddlllddruudlurrrldruuuudruulddulllrulddurrdrrldddllldddruuuudlurrrldruuuuudrullll
+    vector<vector<int>> map = {{3,0,0,0,0},
+                               {0,0,0,0,0},
+                               {3,4,0,0,3},
+                               {4,4,4,0,4},
+                               {0,2,0,0,0},
+                               {0,2,0,0,0},
+                               {0,0,4,4,4},
+                               {0,2,0,0,1},
+                               {0,0,0,0,0},
+                               {0,0,0,4,4}};
+*/
     Tree testTree(map);
 
     cout << testTree.aStar() << endl;

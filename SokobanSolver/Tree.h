@@ -9,6 +9,8 @@
 #include <math.h>
 #include <bits/stdc++.h>
 
+#include <sys/sysinfo.h>
+
 using namespace std;
 
 class Tree
@@ -18,6 +20,8 @@ public:
     Tree(vector<vector<int>> &map);
 
     string aStar();
+
+    unsigned long get_mem_total();
 
     Node initialState;
 

@@ -54,6 +54,9 @@ struct nodeCostCompare
 public:
     int operator() (Node& n1, Node& n2)
     {
+        if (n1.getCost() == n2.getCost())
+            return (n1.h > n2.h);
+
         return (n1.getCost() > n2.getCost());
     }
 };

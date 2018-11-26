@@ -2,3 +2,5 @@
 \.idea/
 
 SokobanSolver/cmake-build-debug/
+
+SokobanSolver/cmake-build-release/

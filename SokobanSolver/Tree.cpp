@@ -37,9 +37,27 @@ Tree::Tree(vector<vector<int>> &map)
 
 }
 
+unsigned long Tree::get_mem_total() {
+    std::string token;
+    std::ifstream file("/proc/meminfo");
+    while(file >> token) {
+        if(token == "MemAvailable:") {
+            unsigned long mem;
+            if(file >> mem) {
+                return mem;
+            } else {
+                return 0;
+            }
+        }
+        // ignore rest of the line
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    return 0; // nothing found
+}
+
 string Tree::aStar()
 {
-    string moves;
+    string output;
 
     int i = 0;
     openSet.push(initialState);
@@ -53,13 +71,14 @@ string Tree::aStar()
         else
         {
             filterAndMerge(node);
-            cout << "Index: " << i << " h: " <<  node.h << " g: " << node.g << " Robot pos: " << node.robotPosition.x << "," << node.robotPosition.y << " number of complted cans: " << node.goalsWithCans.size() << endl;
+            cout << "Index: " << i << " h: " <<  node.h << " g: " << node.g << " Total Cost: " << node.h+node.g << endl;
+            if (get_mem_total() < 1000000)
+                return "OUT OF MEMORY";
         }
         i++;
     }
 
-    cout << "FAILED! NO PATH FOUND" << endl;
-    return moves;
+    return "FAILED! NO PATH FOUND";
 }
 
 
@@ -96,7 +115,7 @@ bool Tree::isDeadLock(Node &node)
         }
 
         if (deadLockedPoint(node.canPositions[i], node.canPositions[i], node.canPositions[i], node) && !canOnGoal) {
-            cout << "DEADLOCK ON CAN AT: " << node.canPositions[i].x << node.canPositions[i].y << endl;
+            //cout << "DEADLOCK ON CAN AT: " << node.canPositions[i].x << node.canPositions[i].y << endl;
             return true;
         }
     }
