@@ -2,73 +2,18 @@
 #include "Tree.h"
 #include <chrono>
 
+// M = Move forward
+// L = turn Left
+// R = turn Right
+// C = Deliver Can
+
+string pathInterpreter(string path);
+
+
 int main()
 {
     std::chrono::seconds startTime = std::chrono::duration_cast< std::chrono::seconds >(std::chrono::system_clock::now().time_since_epoch());
-    /*
-    priority_queue <Node, vector<Node>, nodeCostCompare> openSet;
 
-    for (int i = 0; i < 1000; ++i)
-    {
-        Node tempnode;
-        tempnode.h = rand() % 100;
-        tempnode.g = rand() % 100;
-        openSet.push(tempnode);
-        cout << tempnode.h << " " << tempnode.g << " " << tempnode.getCost() << endl;
-    }
-
-    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
-
-    int j = 0;
-    while (!openSet.empty())
-    {
-        Node tempNode = openSet.top();
-        cout << tempNode.getCost() << " " << tempNode.h << " " << endl;
-        openSet.pop();
-        j++;
-    }
-    */
-
-
-
-        /* PROBLEMS
-
-        improve memory mangement
-        destroy unused node (the once not added to open list)
-
-        a* om til ida*
-
-    */
-/*
-    vector<Point> canPos;
-    canPos.emplace_back(Point(0,2));
-    canPos.emplace_back(Point(1,2));
-    vector<Point> goalPos;
-    goalPos.emplace_back(Point(2,0));
-    goalPos.emplace_back(Point(2,1));
-    vector<Point> holePos;
-    holePos.emplace_back(Point(2,2));
-    holePos.emplace_back(Point(2,3));
-    holePos.emplace_back(Point(3,2));
-    Point robotPos = Point(1,1);
-    string path = "AA";
-    string nextStep = "B   ";
-    NodeV2 tempNode(robotPos, canPos, goalPos, holePos, path, nextStep);
-
-    Tree newTestTree;
-    newTestTree.width = 4;
-    newTestTree.height = 4;
-
-
-    for (int i = 0; i < newTestTree.width; ++i)
-    {
-        for (int j = 0; j < newTestTree.height; ++j)
-        {
-            Point destination(i,j);
-            cout << "Destination: " << i << "," << j << "  " << newTestTree.isLegalRobotMove(tempNode, destination, path) << " " << path << endl;
-        }
-    }
-*/
 
     // 0 = EMPTY
     // 1 = ROBOT
@@ -128,7 +73,7 @@ int main()
 */
     // 2018 COMP MAP
     //Index:  6762875  |  h:   0  |  g: 151  |  Cost: 151
-    //dlllluuuurrrldruuuuuddddlllddruudlurrrldruuuudrullllrulddurrrdddlllddddruuuudlurrrldruuuudrullrdddlldddrdrrulllrdluuuudlurrrldruuuudruullllrrddurrlurdd
+    string path = "dlllluuuurrrldruuuuuddddlllddruudlurrrldruuuudrullllrulddurrrdddlllddddruuuudlurrrldruuuudrullrdddlldddrdrrulllrdluuuudlurrrldruuuudruullllrrddurrlurdd";
 /*    vector<vector<int>> map = {{3,0,0,0,0},
                                {0,0,0,0,0},
                                {3,4,3,0,3},
@@ -161,60 +106,164 @@ int main()
                                {0,0,0,0,0},
                                {0,0,0,4,4}};
 */
-    Tree testTree(map);
+    Tree solverTree(map);
 
-    cout << testTree.aStar() << endl;
+    cout << pathInterpreter(solverTree.aStar()) << endl;
     std::chrono::seconds endTime = std::chrono::duration_cast< std::chrono::seconds >(std::chrono::system_clock::now().time_since_epoch());
     std::chrono::seconds runTime = std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime);
     cout << runTime.count() << endl;
 
 
-
-
-    /*
-    Node node;
-
-    node.path = "rrr";
-    node.canIndex = 1;
-
-    cout << testTree.isLegalMove(node) << endl;
-    */
-    /*
-    Node node1;
-    Node node2;
-    Node node3;
-    Node node4;
-    Node node5;
-    Node node6;
-    Node node7;
-    Node node8;
-    Node node9;
-
-    node1.h = 5; node1.g = 10;
-    node2.h = 3; node2.g = 14;
-    node3.h = 7; node3.g = 41;
-    node4.h = 9; node4.g = 32;
-    node5.h = 3; node5.g = 1;
-    node6.h = 14; node6.g = 51;
-    node7.h = 8; node7.g = 21;
-    node8.h = 2; node8.g = 24;
-    node9.h = 11; node9.g = 31;
-
-    testTree.openSet.push_back(node1);
-    testTree.openSet.push_back(node2);
-    testTree.openSet.push_back(node3);
-    testTree.openSet.push_back(node4);
-    testTree.openSet.push_back(node5);
-    testTree.openSet.push_back(node6);
-    testTree.openSet.push_back(node7);
-    testTree.openSet.push_back(node8);
-    testTree.openSet.push_back(node9);
-
-    cout << testTree.openSet[0].getCost() << " " << testTree.openSet[1].getCost() << " " << testTree.openSet[2].getCost() << " " << testTree.openSet[3].getCost() << " " << testTree.openSet[4].getCost() << " " << testTree.openSet[5].getCost() << " " << testTree.openSet[6].getCost() << " " << testTree.openSet[7].getCost() << " " << testTree.openSet[8].getCost() << endl;
-
-
-    cout << testTree.openSet[0].getCost() << " " << testTree.openSet[1].getCost() << " " << testTree.openSet[2].getCost() << " " << testTree.openSet[3].getCost() << " " << testTree.openSet[4].getCost() << " " << testTree.openSet[5].getCost() << " " << testTree.openSet[6].getCost() << " " << testTree.openSet[7].getCost() << " " << testTree.openSet[8].getCost() << endl;
-    */
-
     return 0;
+}
+
+string pathInterpreter(string path)
+{
+    string moves = "";
+    for (int i = 0; i < path.size()-2; ++i)
+    {
+        if(path[i] == 'u')
+        {
+            if(path[i+1] == 'u')
+            {
+                moves.push_back('M');
+            }
+            else if (path[i+1] == 'd')
+            {
+                moves.push_back('C');
+                if (path[i+2] == 'd')
+                {
+                    moves.push_back('L');
+                    moves.push_back('L');
+                }
+                else if (path[i+2] == 'l')
+                {
+                    moves.push_back('L');
+                }
+                else if (path[i+2] == 'r')
+                {
+                    moves.push_back('R');
+                }
+                i++;
+            }
+            else if (path[i+1] == 'l')
+            {
+                moves.push_back('M');
+                moves.push_back('L');
+            }
+            else if (path[i+1] == 'r')
+            {
+                moves.push_back('M');
+                moves.push_back('R');
+            }
+        }
+        else if (path[i] == 'd')
+        {
+            if(path[i+1] == 'u')
+            {
+                moves.push_back('C');
+                if (path[i+2] == 'u')
+                {
+                    moves.push_back('L');
+                    moves.push_back('L');
+                }
+                else if (path[i+2] == 'l')
+                {
+                    moves.push_back('R');
+                }
+                else if (path[i+2] == 'r')
+                {
+                    moves.push_back('L');
+                }
+                i++;
+            }
+            else if (path[i+1] == 'd')
+            {
+                moves.push_back('M');
+            }
+            else if (path[i+1] == 'l')
+            {
+                moves.push_back('M');
+                moves.push_back('R');
+            }
+            else if (path[i+1] == 'r')
+            {
+                moves.push_back('M');
+                moves.push_back('L');
+            }
+        }
+        else if (path[i] == 'l')
+        {
+            if(path[i+1] == 'u')
+            {
+                moves.push_back('M');
+                moves.push_back('R');
+            }
+            else if (path[i+1] == 'd')
+            {
+                moves.push_back('M');
+                moves.push_back('L');
+            }
+            else if (path[i+1] == 'l')
+            {
+                moves.push_back('M');
+            }
+            else if (path[i+1] == 'r')
+            {
+                moves.push_back('C');
+                if (path[i+2] == 'r')
+                {
+                    moves.push_back('R');
+                    moves.push_back('R');
+                }
+                else if (path[i+2] == 'u')
+                {
+                    moves.push_back('R');
+                }
+                else if (path[i+2] == 'd')
+                {
+                    moves.push_back('L');
+                }
+                i++;
+            }
+        }
+        else if (path[i] == 'r')
+        {
+            if(path[i+1] == 'u')
+            {
+                moves.push_back('M');
+                moves.push_back('L');
+            }
+            else if (path[i+1] == 'd')
+            {
+                moves.push_back('M');
+                moves.push_back('R');
+            }
+            else if (path[i+1] == 'l')
+            {
+                moves.push_back('C');
+                if (path[i+2] == 'l')
+                {
+                    moves.push_back('R');
+                    moves.push_back('R');
+                }
+                else if (path[i+2] == 'u')
+                {
+                    moves.push_back('L');
+                }
+                else if (path[i+2] == 'd')
+                {
+                    moves.push_back('R');
+                }
+                i++;
+            }
+            else if (path[i+1] == 'r')
+            {
+                moves.push_back('M');
+            }
+        }
+    }
+    moves.push_back('M');
+    moves.push_back('M');
+    return moves;
 }

@@ -162,21 +162,21 @@ while not touchSensor.value():
 
 sleep(1)
 
-listofmoves = "frfdrflflffffdrflffflfflfflfdrflflfffdrflflffd"
+listofmoves = "MRMMMMRMMMMRMMCRMLMLMMMMCLLMMMRMMMLMMLMLMCLMRMRMMCRMLMLMMMCRMLMLMMMCRMLMLMCLMMMRMMMRMMMLMMMMLMLMMMCLMRMRMMCRMLMLMMMCRMLMLMCLMMMRMMLMMMLMRMLMMLMLMMCLMRMRMMMCLMRMRMMCRMLMLMMMCRMLMMLMMMCRRMRMCLMCLMRMRMM"
 listOfMovements = []
 
 for n in listofmoves:
-    if n == "f":
+    if n == "M":
         listOfMovements.append("driveForward")
-    elif n == "r":
+    elif n == "R":
         listOfMovements.append("turnRight")
-    elif n == "l":
+    elif n == "L":
         listOfMovements.append("turnLeft")
-    elif n == "d":
+    elif n == "C":
         listOfMovements.append("deliverCan")
-    elif n == "w":
+    elif n == "W":
         listOfMovements.append("wait")
-    elif n == "s":
+    elif n == "S":
         listOfMovements.append("stop")
     else:
         listOfMovements.append("error")
