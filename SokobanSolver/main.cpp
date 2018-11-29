@@ -21,7 +21,7 @@ int main()
     // 3 = GOAL
     // 4 = INACCESSIBLE
 
-    vector<vector<int>> map = {{0,0,0,3,0},
+/*    vector<vector<int>> map = {{0,0,0,3,0},
                               {0,0,0,0,0},
                               {3,0,3,0,3},
                               {0,0,4,0,4},
@@ -31,7 +31,7 @@ int main()
                               {0,2,2,0,0},
                               {0,2,1,0,0},
                               {0,0,0,4,4}};
-
+*/
     /*
     vector<vector<int>> map = {{0,2,3,3},
                                {0,0,0,0},
@@ -73,8 +73,8 @@ int main()
 */
     // 2018 COMP MAP
     //Index:  6762875  |  h:   0  |  g: 151  |  Cost: 151
-    //string path = "dlllluuuurrrldruuuuuddddlllddruudlurrrldruuuudrullllrulddurrrdddlllddddruuuudlurrrldruuuudrullrdddlldddrdrrulllrdluuuudlurrrldruuuudruullllrrddurrlurdd";
-/*    vector<vector<int>> map = {{3,0,0,0,0},
+    string path = "dlllluuuurrrldruuuuuddddlllddruudlurrrldruuuudrullllrulddurrrdddlllddddruuuudlurrrldruuuudrullrdddlldddrdrrulllrdluuuudlurrrldruuuudruullllrrddurrlurdd";
+    vector<vector<int>> map = {{3,0,0,0,0},
                                {0,0,0,0,0},
                                {3,4,3,0,3},
                                {4,4,4,0,4},
@@ -84,7 +84,7 @@ int main()
                                {0,2,0,2,1},
                                {0,0,0,0,0},
                                {0,0,0,4,4}};
-*/
+
 
     //Index: 1546923 h: 1 g: 106 Robot pos: 1,0 number of complted cans: 2
     //Index: 1546924 h: 14 g: 93 Robot pos: 0,6 number of complted cans: 1
