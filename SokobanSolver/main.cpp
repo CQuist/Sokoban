@@ -73,7 +73,7 @@ int main()
 */
     // 2018 COMP MAP
     //Index:  6762875  |  h:   0  |  g: 151  |  Cost: 151
-    string path = "dlllluuuurrrldruuuuuddddlllddruudlurrrldruuuudrullllrulddurrrdddlllddddruuuudlurrrldruuuudrullrdddlldddrdrrulllrdluuuudlurrrldruuuudruullllrrddurrlurdd";
+    //string path = "dlllluuuurrrldruuuuuddddlllddruudlurrrldruuuudrullllrulddurrrdddlllddddruuuudlurrrldruuuudrullrdddlldddrdrrulllrdluuuudlurrrldruuuudruullllrrddurrlurdd";
 /*    vector<vector<int>> map = {{3,0,0,0,0},
                                {0,0,0,0,0},
                                {3,4,3,0,3},
@@ -108,11 +108,22 @@ int main()
 */
     Tree solverTree(map);
 
-    cout << pathInterpreter(solverTree.aStar()) << endl;
+    string path = solverTree.aStar();
+
     std::chrono::seconds endTime = std::chrono::duration_cast< std::chrono::seconds >(std::chrono::system_clock::now().time_since_epoch());
     std::chrono::seconds runTime = std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime);
+
+    cout << path << endl;
     cout << runTime.count() << endl;
 
+    string moves = pathInterpreter(path);
+    cout << moves << endl;
+
+    ofstream movesFile;
+    movesFile.open("../movesFile2017.txt");
+    movesFile << moves;
+    movesFile << "\n";
+    movesFile.close();
 
     return 0;
 }
