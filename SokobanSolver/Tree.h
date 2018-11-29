@@ -42,6 +42,7 @@ private:
     bool stateVisited(NodeV2 &node);
     bool outOfBounds(Point point);
     bool isGoal(NodeV2 &node);
+    bool inDeadZone(Point &point);
 
     int robotGotCan(NodeV2 &node);
 

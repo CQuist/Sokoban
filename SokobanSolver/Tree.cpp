@@ -81,7 +81,7 @@ void Tree::makeSuccessors(NodeV2 &node)
             string path = "";
 
             //move can right
-            if (isLegalCanMove(node, rightNeighbour) && isLegalRobotMove(node, leftNeighbour, path))
+            if (!inDeadZone(rightNeighbour) && isLegalCanMove(node, rightNeighbour) && isLegalRobotMove(node, leftNeighbour, path))
             {
                 path.append("rr");
                 vector<Point> newCanPos = updateCans(node.canPositions, rightNeighbour, i);
@@ -93,7 +93,7 @@ void Tree::makeSuccessors(NodeV2 &node)
             }
 
             //move can left
-            if (isLegalCanMove(node, leftNeighbour) && isLegalRobotMove(node, rightNeighbour, path))
+            if (!inDeadZone(leftNeighbour) && isLegalCanMove(node, leftNeighbour) && isLegalRobotMove(node, rightNeighbour, path))
             {
                 path.append("ll");
                 vector<Point> newCanPos = updateCans(node.canPositions, leftNeighbour, i);
@@ -105,7 +105,7 @@ void Tree::makeSuccessors(NodeV2 &node)
             }
 
             //move can up
-            if (isLegalCanMove(node, upNeighbour) && isLegalRobotMove(node, downNeighbour, path))
+            if (!inDeadZone(upNeighbour) && isLegalCanMove(node, upNeighbour) && isLegalRobotMove(node, downNeighbour, path))
             {
                 path.append("uu");
                 vector<Point> newCanPos = updateCans(node.canPositions, upNeighbour, i);
@@ -117,7 +117,7 @@ void Tree::makeSuccessors(NodeV2 &node)
             }
 
             //move can down
-            if (isLegalCanMove(node, downNeighbour) && isLegalRobotMove(node, upNeighbour, path))
+            if (!inDeadZone(downNeighbour) && isLegalCanMove(node, downNeighbour) && isLegalRobotMove(node, upNeighbour, path))
             {
                 path.append("dd");
                 vector<Point> newCanPos = updateCans(node.canPositions, downNeighbour, i);
@@ -140,7 +140,7 @@ void Tree::makeSuccessors(NodeV2 &node)
         // Last move with can was right
         if (*(node.path.end()-1) == 'r')
         {
-            if (isLegalCanMove(node, rightNeighbour))
+            if (!inDeadZone(rightNeighbour) && isLegalCanMove(node, rightNeighbour))
             {
                 path.append("r");
                 vector<Point> newCanPos = updateCans(node.canPositions, rightNeighbour, canIndex);
@@ -159,7 +159,7 @@ void Tree::makeSuccessors(NodeV2 &node)
         }// Last move with can was left
         else if (*(node.path.end()-1) == 'l')
         {
-            if (isLegalCanMove(node, leftNeighbour))
+            if (!inDeadZone(leftNeighbour) && isLegalCanMove(node, leftNeighbour))
             {
                 path.append("l");
                 vector<Point> newCanPos = updateCans(node.canPositions, leftNeighbour, canIndex);
@@ -178,7 +178,7 @@ void Tree::makeSuccessors(NodeV2 &node)
         }// Last move with can was up
         else if (*(node.path.end()-1) == 'u')
         {
-            if (isLegalCanMove(node, upNeighbour))
+            if (!inDeadZone(upNeighbour) && isLegalCanMove(node, upNeighbour))
             {
                 path.append("u");
                 vector<Point> newCanPos = updateCans(node.canPositions, upNeighbour, canIndex);
@@ -197,7 +197,7 @@ void Tree::makeSuccessors(NodeV2 &node)
         }// Last move with can was down
         else if (*(node.path.end()-1) == 'd')
         {
-            if (isLegalCanMove(node, downNeighbour))
+            if (!inDeadZone(downNeighbour) && isLegalCanMove(node, downNeighbour))
             {
                 path.append("d");
                 vector<Point> newCanPos = updateCans(node.canPositions, downNeighbour, canIndex);
@@ -498,4 +498,16 @@ unsigned long Tree::get_mem_total() {
         file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     return 0; // nothing found
+}
+
+bool Tree::inDeadZone(Point &point)
+{
+    vector<Point> deadPoints = {Point(4,0), Point(0,4), Point(4,4), Point(0,5), Point(4,5), Point(0,6), Point(0,7), Point(0,8), Point(0,9), Point(1,9), Point(2,9), Point(4,7), Point(4,8)};
+
+    for (int i = 0; i < deadPoints.size(); ++i)
+    {
+        if (point == deadPoints[i])
+            return true;
+    }
+    return false;
 }
