@@ -56,7 +56,7 @@ def GoForward():
 
     if sensorFront < STOP_THRESHOLD:
         moveReal('forward', 250)
-        stopMovement()
+        #stopMovement()
         done = True
     else:
         moveStraigth('forward', errorL, errorR)
@@ -82,37 +82,38 @@ def GoBackward():
     return done
 
 def TurnRel(direction):
-    turnRel(direction, 70)
+    turnRel(direction, 220)
+    return True
 
 def CenterLine():
     done = False
     sensorLeft = lightSensorLeft.value()
     sensorRight = lightSensorRight.value()
 
-    if abs(sensorRight - sensorLeft) < 10:
+    if abs(sensorRight - sensorLeft) < 15:
         stopMovement()
         done = True
     elif sensorLeft > sensorRight:
-        turn("right", 200)
+        turn("right", 100)              # 200 worked
     elif sensorRight > sensorLeft:
-        turn("left", 200)
+        turn("left", 100)
 
     return done
 
 def Turn(direction):
     done = False
-    sensorLeft = lightSensorLeft.value()
     sensorRight = lightSensorRight.value()
+    sensorLeft = lightSensorLeft.value()
 
     if direction == "right":
         turn(direction)
         if sensorLeft - sensorRight > THRESHOLD_L*0.75:
-            stopMovement()
+            #stopMovement()
             done = True
     elif direction == "left":
         turn(direction)
         if sensorRight - sensorLeft > THRESHOLD_R*0.75:
-            stopMovement()
+            #stopMovement()
             done = True
 
     return done
@@ -161,8 +162,8 @@ while not touchSensor.value():
     pass
 
 sleep(1)
-
-listofmoves = "MRMMMMRMMMMRMMCRMLMLMMMMCLLMMMRMMMLMMLMLMCLMRMRMMCRMLMLMMMCRMLMLMMMCRMLMLMCLMMMRMMMRMMMLMMMMLMLMMMCLMRMRMMCRMLMLMMMCRMLMLMCLMMMRMMLMMMLMRMLMMLMLMMCLMRMRMMMCLMRMRMMCRMLMLMMMCRMLMMLMMMCRRMRMCLMCLMRMRMM"
+listofmoves = "MRMMMMRMMMMRMMCRMLMLMMMMCLLMMMRMMMLMMLMLMCLMRMRMMCRMLMLMMMCRMLMLMMMCRMLMLMCLMMMRMMMRMMMLMMMMLMLMMMCLMRMRMMCRMLMLMMMCRMLMLMCLMMMRMMLMMMMLMMMLMLMMCLMRMRMMMCLMRMRMMCRMLMLMMMCRMLMMLMMMCRRMRMCLMCLMRMRMC"
+#listofmoves = "MRMMMMRMMMMRMMCRMLMLMMMMCLLMMMRMMMLMMLMLMCLMRMRMMCRMLMLMMMCRMLMLMMMCRMLMLMCLMMMRMMMRMMMLMMMMLMLMMMCLMRMRMMCRMLMLMMMCRMLMLMCLMMMRMMLMMMLMRMLMMLMLMMCLMRMRMMMCLMRMRMMCRMLMLMMMCRMLMMLMMMCRRMRMCLMCLMRMRMC"
 listOfMovements = []
 
 for n in listofmoves:
@@ -227,20 +228,24 @@ while len(listOfMovements) >= index and not touchSensor.value():
             state = "idle"
     elif state == "turnRight":
         if turnState == "initial":
-            turnDone = Turn("right")
+            turnDone = TurnRel("right")
+            #turnDone = Turn("right")
             if turnDone:
                 turnState = "primary"
         elif turnState == "primary":
+            #done = Turn("right")
             done = CenterLine()
             if done:
                 state = "idle"
                 turnState = "initial"
     elif state == "turnLeft":
         if turnState == "initial":
-            turnDone = Turn("left")
+            turnDone = TurnRel("left")
+            #turnDone = Turn("left")
             if turnDone:
                 turnState = "primary"
         elif turnState == "primary":
+            #done = Turn("left")
             done = CenterLine()
             if done:
                 state = "idle"

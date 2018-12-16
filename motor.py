@@ -4,8 +4,8 @@ from time import sleep
 mL = ev3.LargeMotor('outD')
 mR = ev3.LargeMotor('outA')
 
-runSpeed =600
-turnSpeed = 400
+runSpeed = 900  # 600 works
+turnSpeed = 600 # 400 works
 turnDistanceWheel = 360
 
 
@@ -21,9 +21,9 @@ def PID(errorL, errorR):
 
     #change it to take the raw value and not the normalized
 
-    Kp = 4
+    Kp = 1 #4
     Ki = 0
-    Kd = 0.5
+    Kd = 0.5 #0.5
 
     ### LEFT MOTOR
 
@@ -126,18 +126,18 @@ def turnRel(direction, turnDistance):
         mL.wait_while('running')
         mR.wait_while('running')
     elif direction == "left":
-        mL.run_to_rel_pos(position_sp=-turnDistance, speed_sp=(turnSpeed), stop_action="hold")
         mR.run_to_rel_pos(position_sp=turnDistance, speed_sp=(turnSpeed), stop_action="hold")
-        mL.wait_while('running')
+        mL.run_to_rel_pos(position_sp=-turnDistance, speed_sp=(turnSpeed), stop_action="hold")
         mR.wait_while('running')
+        mL.wait_while('running')
 
 def turn(direction, speed=turnSpeed):
     if direction == "right":
         mL.run_forever(speed_sp=speed)
         mR.run_forever(speed_sp=-speed)
     elif direction == "left":
-        mL.run_forever(speed_sp=-speed)
         mR.run_forever(speed_sp=speed)
+        mL.run_forever(speed_sp=-speed)
 
 
 def adjustLeft(direction, error):

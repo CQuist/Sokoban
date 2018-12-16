@@ -106,6 +106,7 @@ int main()
                                {0,0,0,0,0},
                                {0,0,0,4,4}};
 */
+/*
     Tree solverTree(map);
 
     string path = solverTree.aStar();
@@ -118,6 +119,10 @@ int main()
 
     string moves = pathInterpreter(path);
     cout << moves << endl;
+    */
+
+    string path2017 = "uddlluurrdrruuuuluulldldrrdddllddrruuuudddrruuuluuurululdldddrdrrdddlluuuruuulurdllddrdrrddldluuuruuuluurrdluldldddrdddlldrdruuuuruuuu";
+    string moves = pathInterpreter(path);
 
     ofstream movesFile;
     movesFile.open("../movesFile2017.txt");
